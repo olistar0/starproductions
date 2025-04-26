@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centered Card</title>
+    <title>Card with Background</title>
     <style>
         body {
             margin: 0;
@@ -15,91 +15,91 @@
             background: url('background.jpg') no-repeat center center fixed;
             background-size: cover;
         }
-.card {
-    position: absolute;
-    top: 60%; /* Adjust vertical placement for larger screens */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2rem 2.5rem;
-    border-radius: 10px;
-    background-color: var(--element-bg);
-    box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.03) inset;
-    max-width: 90%; /* Prevents overflowing on small screens */
-    text-align: center;
-}
 
-/* Media query for smaller screens */
-@media (max-width: 768px) {
-    .card {
-        top: 50%; /* Centers the card vertically for smaller screens */
-        transform: translate(-50%, -50%);
-        width: 90%; /* Ensures the card fits within the screen */
-        padding: 1.5rem 1.5rem; /* Adjust padding for smaller viewports */
-    }
+        /* Your .card styles */
+        .card {
+            position: absolute;
+            top: 60%; /* Adjust vertical placement for larger screens */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            background-color: var(--element-bg);
+            box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.03) inset;
+            max-width: 90%; /* Prevents overflowing on small screens */
+            text-align: center;
+        }
 
-    .card-heading {
-        font-size: 1.5rem; /* Adjust font size for smaller screens */
-    }
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .card {
+                top: 50%; /* Centers the card vertically for smaller screens */
+                transform: translate(-50%, -50%);
+                width: 90%; /* Ensures the card fits within the screen */
+                padding: 1.5rem 1.5rem; /* Adjust padding for smaller viewports */
+            }
 
-    .card-subheading {
-        font-size: 1rem; /* Slightly reduce size of the subheading */
-        margin-top: 0.5rem;
-    }
+            .card-heading {
+                font-size: 1.5rem; /* Adjust font size for smaller screens */
+            }
 
-    .card-description {
-        font-size: 0.9rem; /* Adjust text size for readability */
-        margin-top: 0.8rem;
-    }
-}
+            .card-subheading {
+                font-size: 1rem; /* Slightly reduce size of the subheading */
+                margin-top: 0.5rem;
+            }
 
-.main-container {
-    margin-top: -10rem;
-    z-index: 3;
-}
+            .card-description {
+                font-size: 0.9rem; /* Adjust text size for readability */
+                margin-top: 0.8rem;
+            }
+        }
 
-.card-heading {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
-    width: fit-content;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 1.7rem;
-    font-weight: 800;
-    letter-spacing: 0.08rem;
-}
+        .main-container {
+            margin-top: -10rem;
+            z-index: 3;
+        }
 
-.card-subheading {
-    letter-spacing: 0.05rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.25);
-    margin-top: 0.2rem;
-}
+        .card-heading {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+            width: fit-content;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: 0.08rem;
+        }
 
-.card-description {
-    margin-top: 1.4rem;
-    line-height: 1.8rem;
-    color: rgba(255, 255, 255, 0.6);
-}
+        .card-subheading {
+            letter-spacing: 0.05rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.25);
+            margin-top: 0.2rem;
+        }
 
-.card-description img {
-    max-width: 100%;
-    height: auto;
-}
+        .card-description {
+            margin-top: 1.4rem;
+            line-height: 1.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
 
-.card-description p:first-child {
-    width: 75%;
-}
+        .card-description img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .card-description p:first-child {
+            width: 75%;
+        }
     </style>
 </head>
 <body>
-                    	<div class="card">
-	    <div class="index-header-group">
-	        <div class="card-heading">                StarMC SMP Webpage</div>
-	        <div class="card-subheading">Select a category on the left to get started!</div>
-	        <div class="card-description">Testy</div>
-
-	    </div>
+    <div class="card">
+        <h1 class="card-heading">Welcome to StarMC SMP</h1>
+        <p class="card-subheading">Your adventure awaits!</p>
+        <p class="card-description">2025 © StarMC SMP (Star Productions). All rights reserved.<br>Not affiliated with Mojang AB or Microsoft.</p>
+    </div>
 </body>
 </html>
