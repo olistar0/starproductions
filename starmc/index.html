@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card with Background</title>
     <style>
+         :root {
+    --header-height: 570px;  /* The height of the header. This can be in PX or REM */
+    --logo-height: 160px; /* The height of the logo. This can be in PX or REM */
+    --header-margin-top: 9rem; /* The distance of the logo, discord, and server status texts from the top of the header */
+    --background-bg: #302915; /* The background color of the page. Dark color highly suggested. */
+    --element-bg: #302915; /* The background color for most of the elements on the page. Very dark variant of the primary color suggested. */
+    --table-border-color: #302915; /* The color of the borders of any tables in the theme. Dark variant of the primary color suggested. */
+    --background-overlay: rgba(0,0,0,0.3); /* The color of the header background overlay. Change the first three numbers (RGB) for color, last number for opacity. */
+    --secondary-background-overlay: rgba(0,0,0,0.6); /* Another layer of overlay. Recommended to keep the first three numbers the same */
+    --primary-color: #D58A5C; /* The primary color of the theme */
+    --primary-light: #f0c2a5; /* A lighter variant of the primary color - used for a few gradiants across the webstore */
+    --success-color: #2C5728; /* The color used in some success buttons/messages. Green is recommended as it often indicates success */
+    --support-box: #FF3737; /* The color used as the border for the support box on the home page */
+    --support-background: rgba(255, 55, 55, 0.1); /* The background color of the support box. Recommended to use a darker version of the --support-box color. Keep the 0.1 value on the end as this represents opacity and is needed for the design (only change the first 3 numbers, the RGB code) */
+}
 body {
     margin: 0;
     padding: 0;
