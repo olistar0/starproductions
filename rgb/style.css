@@ -9,13 +9,13 @@ logo-html {
 }
 
 .logo-animated {
-    animation-name: floating;
+    animation-name: rgbhover;
     animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
 }
 
-@keyframes floating {
+@keyframes rgbhover {
     from { transform: translate(0,  0px); }
     65%  { transform: translate(0, 15px); }
     to   { transform: translate(0, -0px); }    
