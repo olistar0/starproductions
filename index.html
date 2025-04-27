@@ -43,52 +43,32 @@ body {
     justify-content: center;
 }
 
-.logo-container {
-    z-index: 2;
-    height: fit-content;
-    text-align: center;
-    position: absolute;
-    top: 35px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.logo {
-    height: 170px;
-    width: auto;
-}
-
-.logo-animated {
-    animation-name: hover-logo;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-}
-
 .box {
     position: absolute;
-    top: 50%;
-    left: 5%; /* Moved towards the side significantly */
+    top: 40%; /* Moved up the page */
+    left: 5%; /* Positioned towards the side */
     width: 400px;
     height: auto;
     background-color: #4b3f2f; /* Dark brown box color */
-    border-radius: 20px; /* Added rounded corners */
+    border-radius: 20px; /* Rounded corners */
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     animation: hover-box 3s infinite ease-in-out;
-    animation-delay: 1.5s; /* Added a delay to stagger the timing */
+    animation-delay: 1.5s; /* Staggered animation */
 }
 
 .image-container {
     width: 100%;
-    height: 200px;
-    background-color: #ccc; /* Placeholder color for the image */
+    height: 150px; /* Smaller image box */
+    background: url('./assets/pictemplate.png') no-repeat center center;
+    background-size: cover;
     border-radius: 15px;
     margin-bottom: 15px;
 }
 
 .title {
     color: var(--title-color);
+    font-family: "Poppins", sans-serif; /* Font from the old image */
     font-size: 24px;
     font-weight: bold;
     text-align: center;
@@ -97,6 +77,7 @@ body {
 
 .description {
     color: var(--description-color);
+    font-family: "Poppins", sans-serif; /* Font from the old image */
     font-size: 16px;
     text-align: center;
     margin-bottom: 20px;
@@ -118,15 +99,10 @@ body {
 }
 
 .redirect-button:hover {
-    background-color: #cc3700;
+    background-color: #cc3700; /* Slightly darker shade on hover */
 }
 
-@keyframes hover-logo {
-    from { transform: translate(0, 0px); }
-    65%  { transform: translate(0, 15px); }
-    to   { transform: translate(0, -0px); }    
-}
-
+/* Animation for box */
 @keyframes hover-box {
     from { transform: translate(0, 0px); }
     65%  { transform: translate(0, 10px); }
@@ -141,13 +117,11 @@ body {
                 </a>
             </div>
             <div class="box"> <!-- Main Box -->
-                <div class="image-container"> <!-- Image Box -->
-                    <p>Image Placeholder</p>
-                </div>
+                <div class="image-container"></div> <!-- Image Box -->
                 <div class="title">Box Title</div> <!-- Title Section -->
                 <div class="description">This is the description text inside the box. You can edit this.</div> <!-- Description Section -->
                 <div class="button-container"> <!-- Redirect Link Box -->
-                    <button class="redirect-button">Click Here</button>
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
                 </div>
             </div>
 </body>
