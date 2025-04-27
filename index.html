@@ -29,38 +29,55 @@ body {
     background: url('./assets/bg.png') no-repeat center center fixed;
     background-size: cover;
     margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
     font-family: "Montserrat", sans-serif;
-    align-items: center;
-    justify-content: center;
 }
 
-/* Container for aligning boxes along a straight line */
+/* Sticky Logo */
+.logo-container {
+    position: fixed; /* Always visible at the top */
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.logo {
+    height: 150px;
+    width: auto;
+}
+
+/* Scrollable box container */
 .container {
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Stacks rows as you scroll */
+    gap: 50px;
     align-items: center;
-    gap: 20px;
-    position: absolute;
-    top: 50%; /* Aligning along the red line */
-    left: 0;
-    width: 100%;
+    padding-top: 180px; /* Prevent overlap with sticky logo */
 }
 
-/* Box styling */
-.box {
+/.row {
+    display: flex;
+    justify-content: space-between; /* Distribute boxes evenly */
+    width: 80%;
+}
+
+/.box {
     width: 400px;
     height: auto;
     background-color: #4b3f2f;
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    animation: hover-box 3s infinite ease-in-out;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
-/* Image container */
+/* Box Fade Effect */
+.box.fade-out {
+    opacity: 0;
+}
+
+/* Image Box */
 .image-container {
     width: 100%;
     height: 150px;
@@ -70,7 +87,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Title styling */
+/* Title */
 .title {
     color: var(--title-color);
     font-family: "Poppins", sans-serif;
@@ -80,7 +97,7 @@ body {
     margin-bottom: 10px;
 }
 
-/* Description styling */
+/* Description */
 .description {
     color: var(--description-color);
     font-family: "Poppins", sans-serif;
@@ -89,7 +106,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Button styling */
+/* Redirect Button */
 .button-container {
     width: 100%;
     text-align: center;
@@ -109,48 +126,74 @@ body {
 .redirect-button:hover {
     background-color: #cc3700;
 }
-
-/* Floating Animation */
-@keyframes hover-box {
-    from { transform: translate(0, 0px); }
-    65%  { transform: translate(0, 10px); }
-    to   { transform: translate(0, -0px); }
-}
 </style>
 </head>
 <body>
     <div class="logo-container">
         <a href="/starproductions">
-            <img class="logo logo-animated" alt="logo" src="assets/icon.png">
+            <img class="logo" alt="logo" src="assets/icon.png">
         </a>
     </div>
 
-    <!-- Multiple boxes aligned in a row -->
+    <!-- Scrollable Content -->
     <div class="container">
-        <div class="box">
-            <div class="image-container" style="background-image: url('./assets/image1.png');"></div>
-            <div class="title">First Box Title</div>
-            <div class="description">Description for the first box.</div>
-            <div class="button-container">
-                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+        <!-- First Row -->
+        <div class="row">
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image1.png');"></div>
+                <div class="title">First Box Title</div>
+                <div class="description">Description for the first box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
+            </div>
+            
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image2.png');"></div>
+                <div class="title">Second Box Title</div>
+                <div class="description">Description for the second box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image3.png');"></div>
+                <div class="title">Third Box Title</div>
+                <div class="description">Description for the third box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
             </div>
         </div>
 
-        <div class="box">
-            <div class="image-container" style="background-image: url('./assets/image2.png');"></div>
-            <div class="title">Second Box Title</div>
-            <div class="description">Description for the second box.</div>
-            <div class="button-container">
-                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+        <!-- Second Row (Appears on Scroll) -->
+        <div class="row">
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image4.png');"></div>
+                <div class="title">Fourth Box Title</div>
+                <div class="description">Description for the fourth box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
             </div>
-        </div>
+            
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image5.png');"></div>
+                <div class="title">Fifth Box Title</div>
+                <div class="description">Description for the fifth box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
+            </div>
 
-        <div class="box">
-            <div class="image-container" style="background-image: url('./assets/image3.png');"></div>
-            <div class="title">Third Box Title</div>
-            <div class="description">Description for the third box.</div>
-            <div class="button-container">
-                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+            <div class="box">
+                <div class="image-container" style="background-image: url('./assets/image6.png');"></div>
+                <div class="title">Sixth Box Title</div>
+                <div class="description">Description for the sixth box.</div>
+                <div class="button-container">
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+                </div>
             </div>
         </div>
     </div>
