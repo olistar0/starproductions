@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
+<html lang="en">
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,26 +9,20 @@
     <meta name="title" content="Star Productions">
     <meta name="theme-color" content="#1d1d1d">
     <meta name="description" content="View our webpage!" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Star Productions" />
-    <meta property="og:title" content="Star Productions" />
-    <meta property="og:url" content="https://olistar0.github.io/starproductions/" />
-    <meta property="og:description" content="View our webpage!" />
     
     <link rel="shortcut icon" href="assets/tabicon.png">
-	  
+      
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
 <style>
 :root {
-    --title-color: #FFA500; /* Customize the hex for the title */
-    --description-color: #FFD700; /* Customize the hex for the description */
-    --button-color: #FF4500; /* Customize the hex for the button */
+    --title-color: #FFA500;
+    --description-color: #FFD700;
+    --button-color: #FF4500;
 }
 
 body {
@@ -42,69 +36,60 @@ body {
     align-items: center;
     justify-content: center;
 }
-	
-.logo-container {
-    z-index: 2;
-    height: fit-content;
-    text-align: center;
+
+/* Container for aligning boxes along a straight line */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
     position: absolute;
-    top: 35px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 50%; /* Aligning along the red line */
+    left: 0;
+    width: 100%;
 }
 
-.logo {
-    height: 170px;
-    width: auto;
-}
-
-.logo-animated {
-    animation-name: hover-logo;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-}
-
+/* Box styling */
 .box {
-    position: absolute;
-    top: 40%; /* Moved up the page */
-    left: 5%; /* Positioned towards the side */
     width: 400px;
     height: auto;
-    background-color: #4b3f2f; /* Dark brown box color */
-    border-radius: 20px; /* Rounded corners */
+    background-color: #4b3f2f;
+    border-radius: 20px;
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     animation: hover-box 3s infinite ease-in-out;
-    animation-delay: 1.5s; /* Staggered animation */
 }
 
+/* Image container */
 .image-container {
     width: 100%;
-    height: 150px; /* Smaller image box */
-    background: url('./assets/pictemplate.png') no-repeat center center;
+    height: 150px;
     background-size: cover;
+    background-position: center;
     border-radius: 15px;
     margin-bottom: 15px;
 }
 
+/* Title styling */
 .title {
     color: var(--title-color);
-    font-family: "Poppins", sans-serif; /* Font from the old image */
+    font-family: "Poppins", sans-serif;
     font-size: 24px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 10px;
 }
 
+/* Description styling */
 .description {
     color: var(--description-color);
-    font-family: "Poppins", sans-serif; /* Font from the old image */
+    font-family: "Poppins", sans-serif;
     font-size: 16px;
     text-align: center;
     margin-bottom: 20px;
 }
 
+/* Button styling */
 .button-container {
     width: 100%;
     text-align: center;
@@ -118,33 +103,56 @@ body {
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .redirect-button:hover {
-    background-color: #cc3700; /* Slightly darker shade on hover */
+    background-color: #cc3700;
 }
 
-/* Animation for box */
+/* Floating Animation */
 @keyframes hover-box {
     from { transform: translate(0, 0px); }
     65%  { transform: translate(0, 10px); }
-    to   { transform: translate(0, -0px); }    
+    to   { transform: translate(0, -0px); }
 }
 </style>
 </head>
-  <body>
-            <div class="logo-container">
-                <a href="/starproductions">
-                    <img class="logo logo-animated" alt="logo" src="assets/icon.png">
-                </a>
+<body>
+    <div class="logo-container">
+        <a href="/starproductions">
+            <img class="logo logo-animated" alt="logo" src="assets/icon.png">
+        </a>
+    </div>
+
+    <!-- Multiple boxes aligned in a row -->
+    <div class="container">
+        <div class="box">
+            <div class="image-container" style="background-image: url('./assets/image1.png');"></div>
+            <div class="title">First Box Title</div>
+            <div class="description">Description for the first box.</div>
+            <div class="button-container">
+                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
             </div>
-            <div class="box"> <!-- Main Box -->
-                <div class="image-container"></div> <!-- Image Box -->
-                <div class="title">Box Title</div> <!-- Title Section -->
-                <div class="description">This is the description text inside the box. You can edit this.</div> <!-- Description Section -->
-                <div class="button-container"> <!-- Redirect Link Box -->
-                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
-                </div>
+        </div>
+
+        <div class="box">
+            <div class="image-container" style="background-image: url('./assets/image2.png');"></div>
+            <div class="title">Second Box Title</div>
+            <div class="description">Description for the second box.</div>
+            <div class="button-container">
+                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
             </div>
+        </div>
+
+        <div class="box">
+            <div class="image-container" style="background-image: url('./assets/image3.png');"></div>
+            <div class="title">Third Box Title</div>
+            <div class="description">Description for the third box.</div>
+            <div class="button-container">
+                <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
