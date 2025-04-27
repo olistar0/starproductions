@@ -74,11 +74,19 @@ body {
 
 .image-container {
     width: 100%;
-    height: 150px;
-    background-size: cover;
-    background-position: center;
+    height: auto;
+    aspect-ratio: 1 / 1; /* Ensures a square format */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 15px;
-    margin-bottom: 15px;
+    overflow: hidden; /* Prevents unwanted stretching */
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures the entire image is visible without cropping */
 }
 
 .title {
@@ -141,7 +149,7 @@ body {
                 <div class="title">Left Box</div>
                 <div class="description">Description for the left box.</div>
                 <div class="button-container">
-                    <a href="https://redirectbuttontemp.button" class="redirect-button"> </a>
+                    <a href="https://redirectbuttontemp.button" class="redirect-button">          </a>
                 </div>
             </div>
             
