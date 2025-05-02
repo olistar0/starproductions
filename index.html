@@ -13,161 +13,110 @@
     <link rel="shortcut icon" href="assets/tabicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     
-<style>
-:root {
-    --bgbox-color: #302915;
-    --title-color: #EAB695;
-    --description-color: #918E83;
-    --button-color: #262111;
-}
+    <style>
+        :root {
+            --bgbox-color: #302915;
+            --title-color: #EAB695;
+            --description-color: #918E83;
+            --button-color: #262111;
+        }
 
-body {
-    background: url('./assets/bg.png') no-repeat center center fixed;
-    background-size: cover;
-    margin: 0;
-    font-family: "Montserrat", sans-serif;
-}
+        body {
+            background: url('./assets/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            font-family: "Montserrat", sans-serif;
+        }
 
-.logo-container {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-}
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 400px;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
 
-.logo {
-    height: 170px;
-    width: auto;
-}
+        .box {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bgbox-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: transform 0.5s ease-in-out;
+        }
 
-.logo-animated {
-    animation-name: hover-logo;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-}
+        .hidden {
+            display: none;
+        }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 160px;
-}
+        .arrow-box {
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+        }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    width: 90%;
-    gap: 30px;
-}
+        .arrow-box img {
+            width: 100%;
+        }
 
-.box {
-    width: 30%;
-    background-color: var(--bgbox-color);
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    animation: hover-box 3s infinite ease-in-out;
-    animation-delay: 1.5s;
-}
-
-.image-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.image-container img {
-    width: 64px; /* Keeps the image neat and proportional */
-    height: 64px;
-    object-fit: contain;
-}
-
-.title {
-    color: var(--title-color);
-    font-family: "Poppins", sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.description {
-    color: var(--description-color);
-    font-family: "Poppins", sans-serif;
-    font-size: 16px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.button-container {
-    width: 100%;
-    text-align: center;
-    margin-top: 15px;
-}
-
-.redirect-button {
-    background-color: var(--button-color);
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-@keyframes hover-logo {
-    from { transform: translate(0, 0px); }
-    65%  { transform: translate(0, 15px); }
-    to   { transform: translate(0, -0px); }    
-}
-
-@keyframes hover-box {
-    from { transform: translate(0, 0px); }
-    65%  { transform: translate(0, 10px); }
-    to   { transform: translate(0, -0px); }    
-}
-</style>
+        .left-arrow { left: -60px; }
+        .right-arrow { right: -60px; }
+    </style>
 </head>
 <body>
-    <div class="logo-container">
-        <a href="/starproductions">
-            <img class="logo logo-animated" alt="logo" src="assets/icon.png">
-        </a>
-    </div>
 
     <div class="container">
-        <div class="row">
-            <div class="box">
-                <div class="image-container" style="background-image: url('./assets/test.png');"></div>
-                <div class="title">Left Box</div>
-                <div class="description">Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.Description for the left box.</div>
-                <div class="button-container">
-                    <a href="https://redirectbuttontemp.button" class="redirect-button"> </a>
-                </div>
-            </div>
-            
-            <div class="box">
-                <div class="image-container" style="background-image: url('./assets/image2.png');"></div>
-                <div class="title">Center Box</div>
-                <div class="description">Description for the center box.</div>
-                <div class="button-container">
-                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
-                </div>
-            </div>
+        <div id="box1" class="box">Box 1</div>
+        <div id="box2" class="box hidden">Box 2</div>
+        <div id="box3" class="box hidden">Box 3</div>
+        <div id="box4" class="box hidden">Box 4</div>
+        <div id="box5" class="box hidden">Box 5</div>
 
-            <div class="box">
-                <div class="image-container" style="background-image: url('./assets/image3.png');"></div>
-                <div class="title">Right Box</div>
-                <div class="description">Description for the right box.</div>
-                <div class="button-container">
-                    <a href="https://redirectbuttontemp.button" class="redirect-button">Click Here</a>
-                </div>
-            </div>
+        <div class="arrow-box left-arrow" id="prevButton">
+            <img src="assets/arrow-left.png">
         </div>
+        <div class="arrow-box right-arrow" id="nextButton">
+            <img src="assets/arrow-right.png">
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 1;
+
+        function showBox(index) {
+            document.querySelectorAll('.box').forEach(box => {
+                box.classList.add('hidden');
+            });
+            document.getElementById(`box${index}`).classList.remove('hidden');
+        }
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            if (currentIndex < 5) {
+                currentIndex++;
+                showBox(currentIndex);
+            }
+        });
+
+        document.getElementById('prevButton').addEventListener('click', () => {
+            if (currentIndex > 1) {
+                currentIndex--;
+                showBox(currentIndex);
+            }
+        });
+    </script>
+
 </body>
 </html>
