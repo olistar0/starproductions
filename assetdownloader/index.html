@@ -1,0 +1,1205 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roblox Asset Downloader | Premium Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://images.rbxcdn.com/e854eb7b2951ac03edba9a2681032bba.ico" rel="icon" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ==== Your existing styles ==== */
+        :root {
+            --primary: #6b5ce7;
+            --primary-dark: #5649c5;
+            --secondary: #ff6b6b;
+            --accent: #48dbfb;
+            --success: #1dd1a1;
+            --error: #ff6b6b;
+            --warning: #feca57;
+            --dark: #1a1a2e;
+            --darker: #0d0d1a;
+            --light: #f0f0f7;
+            --card-bg: rgba(30, 30, 46, 0.7);
+            --card-border: rgba(107, 92, 231, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(107, 92, 231, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+
+        .header {
+            text-align: center;
+            margin: 30px 0 20px;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(107, 92, 231, 0.4);
+            transform: rotate(45deg);
+        }
+
+        .logo-icon span {
+            transform: rotate(-45deg);
+            font-size: 36px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            /* fixed */
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+
+        /* Support Arrow Styles */
+        .support-arrow {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .support-arrow:hover {
+            opacity: 1;
+            transform: translateY(5px);
+        }
+
+        .support-text {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .arrow-down {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        .arrow-down span {
+            font-size: 20px;
+            color: white;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-label .icon {
+            margin-right: 10px;
+            color: var(--accent);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .input-container {
+            display: flex;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-container:focus-within {
+            box-shadow: 0 0 0 3px rgba(107, 92, 231, 0.4);
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 18px 20px;
+            border: none;
+            background: rgba(40, 40, 62, 0.8);
+            color: var(--light);
+            font-size: 1.1rem;
+            font-weight: 400;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-field::placeholder {
+            color: rgba(240, 240, 247, 0.5);
+        }
+
+        .input-field:focus {
+            background: rgba(50, 50, 75, 0.8);
+        }
+
+        .submit-btn {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submit-btn span {
+            margin-left: 8px;
+            font-size: 1.1rem;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(107, 92, 231, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-content {
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(40, 40, 62, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            background: linear-gradient(to right, var(--success), #10ac84);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(29, 209, 161, 0.3);
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(29, 209, 161, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn span {
+            margin-left: 8px;
+            font-size: 1.1rem;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .error-message {
+            color: var(--error);
+            margin-top: 8px;
+            font-size: 0.95rem;
+            text-align: left;
+            display: none;
+        }
+
+        .loader {
+            display: none;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(107, 92, 231, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--card-border);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon span {
+            font-size: 28px;
+            color: white;
+            user-select: none;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            width: 100%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin: 50px 0 30px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .asset-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px 0 40px;
+        }
+
+        .asset-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .asset-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 28px;
+            user-select: none;
+        }
+
+        .asset-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--light);
+        }
+
+        .asset-extension {
+            background: rgba(107, 92, 231, 0.15);
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* ==== Simplified Roblox Donation Section ==== */
+        .donation-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+            margin: 40px 0;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donation-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(107, 92, 231, 0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: -1;
+        }
+
+        .donation-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--warning), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .donation-text {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .donation-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .roblox-donation {
+            background: rgba(40, 40, 62, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .roblox-donation:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .roblox-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border-radius: 50%;
+            display: flex;
+            /* fixed */
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+
+        .roblox-donation h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--warning);
+        }
+
+        .roblox-donation p {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .donate-btn {
+            background: linear-gradient(to right, var(--warning), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(254, 202, 87, 0.4);
+        }
+
+        .support-note {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* Download Counter Styles */
+        .download-counter {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0 40px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .counter-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .counter-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--success);
+            margin: 10px 0;
+            text-shadow: 0 2px 10px rgba(29, 209, 161, 0.3);
+        }
+
+        .counter-text {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .input-container {
+                flex-direction: column;
+            }
+
+            .input-field {
+                width: 100%;
+                padding: 16px;
+            }
+
+            .submit-btn {
+                padding: 16px;
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+                /* fixed */
+            }
+
+            .asset-types {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .donation-section {
+                padding: 30px 20px;
+            }
+
+            .support-text {
+                font-size: 0.9rem;
+            }
+
+            .arrow-down {
+                width: 35px;
+                height: 35px;
+            }
+
+            .counter-number {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .asset-types {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+
+            .asset-card {
+                padding: 15px;
+            }
+
+            .asset-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .donation-title {
+                font-size: 1.7rem;
+            }
+
+            .donation-text {
+                font-size: 1rem;
+            }
+
+            .roblox-donation {
+                padding: 20px;
+            }
+
+            .support-text {
+                font-size: 0.85rem;
+            }
+
+            .counter-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <span>R</span>
+            </div>
+        </div>
+        <h1>
+            Roblox Asset Downloader
+            <span style="color: var(--warning); font-size: 1.2rem;">(Beta)</span>
+            <span style="color: var(--accent); font-size: 1rem; margin-left: 10px;">v1.1.0</span>
+        </h1>
+        <p>
+            This is a <strong>beta version</strong> — some features may not work perfectly.
+            If you encounter any problems, please contact me on
+            <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 500;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-discord" viewBox="0 0 16 16">
+                    <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612" />
+                </svg>
+                agentbayabas_04
+            </span>.
+            <br>
+            Enter the Asset ID below to get started.
+        </p>
+        <div class="support-arrow" id="supportArrow">
+            <div class="support-text">Want to support this project?</div>
+            <div class="arrow-down">
+                <span>⬇️</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <form id="downloadForm" method="POST" novalidate>
+            <div class="form-group">
+                <label for="assetId" class="input-label">
+                    <span class="icon">🔍</span> Asset ID:
+                </label>
+                <div class="input-container">
+                    <input type="text" class="input-field" id="assetId" name="assetId"
+                        placeholder="Enter Roblox Asset ID (e.g. 123456789)" required autocomplete="off" />
+                    <button type="submit" id="downloadBtn" class="submit-btn">
+                        Download <span>↓</span>
+                    </button>
+                </div>
+                <div class="error-message" id="errorMsg">Please enter a valid Asset ID</div>
+            </div>
+        </form>
+
+        <div class="loader" id="loader" aria-live="polite" aria-busy="false">
+            <div class="spinner" role="progressbar" aria-label="Loading"></div>
+        </div>
+
+        <div class="result-container" id="result" role="region" aria-live="polite">
+            <div class="result-content">
+                <div class="result-title">Your asset is ready for download!</div>
+                <p>Successfully processed Asset ID: <strong id="assetIdDisplay">123456789</strong></p>
+                <p>Asset Type: <strong id="assetTypeDisplay">Model</strong></p>
+                <a class="download-btn" id="downloadLink" href="#" style="display:none" download>
+                    Download File <span>📥</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Supported Asset Types</h2>
+    <div class="asset-types" id="assetTypes">
+        <!-- Asset cards will be populated by JavaScript -->
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <span>⚡</span>
+            </div>
+            <h3>Lightning Fast</h3>
+            <p>Download assets in seconds with our optimized processing system.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <span>🛡️</span>
+            </div>
+            <h3>Secure & Private</h3>
+            <p>Your requests are processed securely without storing any data.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <span>💎</span>
+            </div>
+            <h3>High Quality</h3>
+            <p>Get assets in their original quality without any compression.</p>
+        </div>
+    </div>
+
+    <!-- Download Counter -->
+    <div class="download-counter">
+        <h3 class="counter-title">Total Downloads</h3>
+        <div class="counter-number" id="downloadCount">
+            13045
+        </div>
+        <p class="counter-text">Files downloaded by our community</p>
+    </div>
+
+    <!-- Simplified Roblox Donation Section -->
+    <div class="donation-section" id="donationSection">
+        <h2 class="donation-title">Support This Project</h2>
+        <p class="donation-text">
+            This service is completely free to use, but maintaining and improving it takes time and resources.
+            If you find this tool helpful, consider supporting its development with a Robux donation.
+        </p>
+
+        <div class="donation-content">
+            <div class="roblox-donation">
+                <div class="roblox-icon">🪙</div>
+                <h3>Donate via Roblox</h3>
+                <p>Support this project by donating Robux through my Roblox game. Every contribution helps keep this
+                    service running and updated!</p>
+
+                <a href="https://www.roblox.com/games/117770982086394/AgentBayabas" class="donate-btn" target="_blank">
+                    Visit My Game to Donate <span>🎮</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="support-note">Thank you for your support! It means a lot and helps keep this service running.</p>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 Roblox Asset Downloader | Developed By AgentBayabas</p>
+    </div>
+
+    <script>
+        // Update footer year and set donation link
+        document.querySelector('.footer p').innerHTML = `© ${new Date().getFullYear()} Roblox Asset Downloader | Developed By AgentBayabas`;
+        //document.querySelector('.donate-btn').href = "https://www.roblox.com/games/117770982086394/AgentBayabas";
+
+        // Scroll to donation section functionality
+        const supportArrow = document.getElementById('supportArrow');
+        const donationSection = document.getElementById('donationSection');
+
+        if (supportArrow && donationSection) {
+            supportArrow.addEventListener('click', () => {
+                donationSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        }
+
+        // Function to update global download count from server
+        async function updateGlobalDownloadCount() {
+            try {
+                const response = await fetch('?get_global_download_count=1');
+                const data = await response.json();
+                if (data.count !== undefined) {
+                    document.getElementById('downloadCount').textContent = data.count;
+                }
+            } catch (error) {
+                console.error('Error fetching download count:', error);
+            }
+        }
+
+        // Function to increment global download count on server
+        async function incrementGlobalDownloadCount() {
+            try {
+                const response = await fetch('?increment_global_download_count=1');
+                const data = await response.json();
+                if (data.count !== undefined) {
+                    document.getElementById('downloadCount').textContent = data.count;
+
+                    // Add animation effect
+                    const counterElement = document.getElementById('downloadCount');
+                    counterElement.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        counterElement.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error incrementing download count:', error);
+            }
+        }
+
+        // Initialize global download count on page load
+        updateGlobalDownloadCount();
+
+        // Asset Types data
+        const assetTypes = {
+            1: ['Image', 'png'],
+            2: ['TShirt', 'png'],
+            3: ['Audio', 'mp3'],
+            4: ['Mesh', 'mesh'],
+            5: ['Lua', 'lua'],
+            8: ['Hat', 'rbxm'],
+            10: ['Model', 'rbxm'],
+            11: ['Shirt', 'png'],
+            12: ['Pants', 'png'],
+            13: ['Decal', 'png'],
+            17: ['Head', 'rbxm'],
+            18: ['Face', 'rbxm'],
+            19: ['Gear', 'rbxm'],
+            21: ['Badge', 'png'],
+            24: ['Animation', 'rbxm'],
+            27: ['Torso', 'rbxm'],
+            28: ['RightArm', 'rbxm'],
+            29: ['LeftArm', 'rbxm'],
+            30: ['LeftLeg', 'rbxm'],
+            31: ['RightLeg', 'rbxm'],
+            32: ['Package', 'rbxm'],
+            34: ['GamePass', 'rbxm'],
+            38: ['Plugin', 'rbxm'],
+            40: ['MeshPart', 'rbxm'],
+            41: ['HairAccessory', 'rbxm'],
+            42: ['FaceAccessory', 'rbxm'],
+            43: ['NeckAccessory', 'rbxm'],
+            44: ['ShoulderAccessory', 'rbxm'],
+            45: ['FrontAccessory', 'rbxm'],
+            46: ['BackAccessory', 'rbxm'],
+            47: ['WaistAccessory', 'rbxm'],
+            48: ['ClimbAnimation', 'rbxm'],
+            49: ['DeathAnimation', 'rbxm'],
+            50: ['FallAnimation', 'rbxm'],
+            51: ['IdleAnimation', 'rbxm'],
+            52: ['JumpAnimation', 'rbxm'],
+            53: ['RunAnimation', 'rbxm'],
+            54: ['SwimAnimation', 'rbxm'],
+            55: ['WalkAnimation', 'rbxm'],
+            56: ['PoseAnimation', 'rbxm'],
+            57: ['EarAccessory', 'rbxm'],
+            58: ['EyeAccessory', 'rbxm'],
+            61: ['EmoteAnimation', 'rbxm'],
+            62: ['Video', 'mp4'],
+            64: ['TShirtAccessory', 'rbxm'],
+            65: ['ShirtAccessory', 'rbxm'],
+            66: ['PantsAccessory', 'rbxm'],
+            67: ['JacketAccessory', 'rbxm'],
+            68: ['SweaterAccessory', 'rbxm'],
+            69: ['ShortsAccessory', 'rbxm'],
+            70: ['LeftShoeAccessory', 'rbxm'],
+            71: ['RightShoeAccessory', 'rbxm'],
+            72: ['DressSkirtAccessory', 'rbxm'],
+            73: ['FontFamily', 'rbxm'],
+            76: ['EyebrowAccessory', 'rbxm'],
+            77: ['EyelashAccessory', 'rbxm'],
+            78: ['MoodAnimation', 'rbxm'],
+            79: ['DynamicHead', 'rbxm']
+        };
+
+        // Icon mapping for asset types
+        const assetIcons = {
+            'Image': '🖼️',
+            'TShirt': '👕',
+            'Audio': '🔊',
+            'Mesh': '🔶',
+            'Lua': '📜',
+            'Hat': '🎩',
+            'Place': '🏠',
+            'Model': '📦',
+            'Shirt': '👔',
+            'Pants': '👖',
+            'Decal': '🔲',
+            'Head': '👤',
+            'Face': '😀',
+            'Gear': '⚙️',
+            'Badge': '🎖️',
+            'Animation': '🎬',
+            'Torso': '👕',
+            'RightArm': '💪',
+            'LeftArm': '💪',
+            'LeftLeg': '🦵',
+            'RightLeg': '🦵',
+            'Package': '📦',
+            'GamePass': '🎟️',
+            'Plugin': '🔌',
+            'MeshPart': '🔷',
+            'HairAccessory': '💇',
+            'FaceAccessory': '👓',
+            'NeckAccessory': '📿',
+            'ShoulderAccessory': '🎽',
+            'FrontAccessory': '💍',
+            'BackAccessory': '🎒',
+            'WaistAccessory': '🧰',
+            'ClimbAnimation': '🧗',
+            'DeathAnimation': '💀',
+            'FallAnimation': '🪂',
+            'IdleAnimation': '🧍',
+            'JumpAnimation': '🦘',
+            'RunAnimation': '🏃',
+            'SwimAnimation': '🏊',
+            'WalkAnimation': '🚶',
+            'PoseAnimation': '🧘',
+            'EarAccessory': '👂',
+            'EyeAccessory': '👁️',
+            'EmoteAnimation': '💃',
+            'Video': '🎥',
+            'TShirtAccessory': '👚',
+            'ShirtAccessory': '👕',
+            'PantsAccessory': '👖',
+            'JacketAccessory': '🧥',
+            'SweaterAccessory': '🧶',
+            'ShortsAccessory': '🩳',
+            'LeftShoeAccessory': '👞',
+            'RightShoeAccessory': '👞',
+            'DressSkirtAccessory': '👗',
+            'FontFamily': '🔤',
+            'EyebrowAccessory': '🤨',
+            'EyelashAccessory': '👁️',
+            'MoodAnimation': '😊',
+            'DynamicHead': '👤'
+        };
+
+        // Populate asset types
+        const assetTypesContainer = document.getElementById('assetTypes');
+
+        function populateAssetTypes() {
+            if (!assetTypesContainer) return;
+
+            for (const [id, [name, extension]] of Object.entries(assetTypes)) {
+                const assetCard = document.createElement('div');
+                assetCard.className = 'asset-card';
+                assetCard.innerHTML = `
+                    <div class="asset-icon">${assetIcons[name] || '📄'}</div>
+                    <div class="asset-name">${name}</div>
+                    <div class="asset-extension">.${extension}</div>
+                `;
+                assetTypesContainer.appendChild(assetCard);
+            }
+        }
+
+        populateAssetTypes();
+
+        // Form submission handling
+        const form = document.getElementById('downloadForm');
+        const assetIdInput = document.getElementById('assetId');
+        const errorMsg = document.getElementById('errorMsg');
+        const loader = document.getElementById('loader');
+        const resultContainer = document.getElementById('result');
+        const assetIdDisplay = document.getElementById('assetIdDisplay');
+        const assetTypeDisplay = document.getElementById('assetTypeDisplay');
+        const downloadLink = document.getElementById('downloadLink');
+        const downloadCountElement = document.getElementById('downloadCount');
+
+        // Reset result container
+        function resetResult() {
+            if (resultContainer) resultContainer.classList.remove('show');
+            if (assetIdDisplay) assetIdDisplay.textContent = '';
+            if (assetTypeDisplay) assetTypeDisplay.textContent = '';
+            if (downloadLink) {
+                downloadLink.style.display = 'none';
+                downloadLink.removeAttribute('href');
+            }
+        }
+
+        // Validate Asset ID (simple numeric check)
+        function isValidAssetId(id) {
+            return /^[0-9]+$/.test(id.trim());
+        }
+
+        // Form submission handler
+        if (form) {
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                resetResult();
+                if (errorMsg) errorMsg.style.display = 'none';
+
+                const assetId = assetIdInput ? assetIdInput.value.trim() : '';
+
+                if (!isValidAssetId(assetId)) {
+                    if (errorMsg) {
+                        errorMsg.textContent = 'Please enter a valid numeric Asset ID';
+                        errorMsg.style.display = 'block';
+                    }
+                    if (assetIdInput) assetIdInput.focus();
+                    return;
+                }
+
+                // Show loader
+                if (loader) {
+                    loader.style.display = 'flex';
+                    loader.setAttribute('aria-busy', 'true');
+                }
+
+                try {
+                    const formData = new FormData();
+                    formData.append('assetId', assetId);
+
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (loader) {
+                        loader.style.display = 'none';
+                        loader.setAttribute('aria-busy', 'false');
+                    }
+
+                    if (data.error) {
+                        if (errorMsg) {
+                            errorMsg.textContent = data.message || 'Unknown error occurred';
+                            errorMsg.style.display = 'block';
+                        }
+                        return;
+                    }
+
+                    // Show result data
+                    if (assetIdDisplay) assetIdDisplay.textContent = assetId;
+                    if (assetTypeDisplay) assetTypeDisplay.textContent = data.assetType || 'Unknown';
+
+                    // Setup download link with proper URL
+                    if (downloadLink) {
+                        const downloadUrl = `${window.location.pathname}?download=1&file=${encodeURIComponent(data.file)}`;
+                        downloadLink.href = downloadUrl;
+                        downloadLink.setAttribute('download', data.file);
+                        downloadLink.style.display = 'inline-flex';
+
+                        // Increment download count when download link is clicked
+                        downloadLink.addEventListener('click', function() {
+                            if (downloadCountElement) {
+                                // Update the counter visually
+                                const currentCount = parseInt(downloadCountElement.textContent);
+                                downloadCountElement.textContent = currentCount + 1;
+
+                                // Add a nice animation effect
+                                downloadCountElement.style.transform = 'scale(1.2)';
+                                setTimeout(() => {
+                                    downloadCountElement.style.transform = 'scale(1)';
+                                }, 300);
+                            }
+                        });
+                    }
+
+                    if (resultContainer) resultContainer.classList.add('show');
+                } catch (err) {
+                    if (loader) {
+                        loader.style.display = 'none';
+                        loader.setAttribute('aria-busy', 'false');
+                    }
+                    if (errorMsg) {
+                        errorMsg.textContent = 'Network error, please try again later.';
+                        errorMsg.style.display = 'block';
+                    }
+                    console.error('Fetch error:', err);
+                }
+            });
+        }
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"b93776a448da4804be19a0b9eaa0bc9b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+
+</html>
