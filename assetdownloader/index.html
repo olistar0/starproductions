@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Roblox Asset Test</title>
+  <title>Roblox Asset Downloader (Test)</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       background: #1a1a2e;
       color: #f0f0f7;
       display: flex;
@@ -14,6 +14,9 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
+    }
+    h2 {
+      margin-bottom: 20px;
     }
     input, button {
       padding: 10px;
@@ -36,35 +39,24 @@
   </style>
 </head>
 <body>
-  <h2>Roblox Asset Downloader (Test)</h2>
+  <h2>Roblox Asset Downloader</h2>
   <input type="text" id="assetId" placeholder="Enter Asset ID (e.g. 123456789)" />
   <button onclick="downloadAsset()">Download</button>
 
   <script>
-    async function downloadAsset() {
+    function downloadAsset() {
       const assetId = document.getElementById('assetId').value.trim();
       if (!/^\d+$/.test(assetId)) {
         alert('Please enter a valid numeric Asset ID.');
         return;
       }
 
-      try {
-        const response = await fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${assetId}`);
-        if (!response.ok) throw new Error('Asset not found');
-
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${assetId}.rbxasset`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } catch (err) {
-        alert('Failed to download asset. Check the ID and try again.');
-        console.error(err);
-      }
+      const link = document.createElement('a');
+      link.href = `https://agentbayabas.xyz/download?id=${assetId}`;
+      link.download = `${assetId}.rbxasset`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
