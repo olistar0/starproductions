@@ -28,6 +28,22 @@
     }
     #result {
       margin-top: 20px;
+      text-align: center;
+    }
+    .error {
+      color: #ff6b6b;
+    }
+    .success {
+      color: #1dd1a1;
+    }
+    a.download-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #1dd1a1;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -39,8 +55,15 @@
 
   <script>
     async function submitAsset() {
-      const assetId = document.getElementById('assetId').value;
+      const assetId = document.getElementById('assetId').value.trim();
       const result = document.getElementById('result');
+      result.innerHTML = '';
+
+      if (!assetId || isNaN(assetId)) {
+        result.innerHTML = '<div class="error">Please enter a valid numeric Asset ID.</div>';
+        return;
+      }
+
       result.textContent = 'Sending request...';
 
       try {
@@ -52,13 +75,23 @@
           body: formData
         });
 
-        if (response.ok) {
-          result.textContent = 'Request successful!';
+        if (!response.ok) {
+          result.innerHTML = `<div class="error">Error: ${response.status}</div>`;
+          return;
+        }
+
+        const data = await response.json(); // Adjust if response is not JSON
+
+        if (data.downloadUrl) {
+          result.innerHTML = `
+            <div class="success">Asset ready! Type: ${data.assetType || 'Unknown'}</div>
+            <a class="download-link" href="${data.downloadUrl}" download>Download Asset</a>
+          `;
         } else {
-          result.textContent = `Error: ${response.status}`;
+          result.innerHTML = '<div class="error">No download URL returned.</div>';
         }
       } catch (err) {
-        result.textContent = `Request failed: ${err.message}`;
+        result.innerHTML = `<div class="error">Request failed: ${err.message}</div>`;
       }
     }
   </script>
