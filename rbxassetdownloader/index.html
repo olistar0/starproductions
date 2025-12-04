@@ -29,22 +29,18 @@
     #result {
       margin-top: 20px;
       text-align: center;
+      max-width: 600px;
+      word-wrap: break-word;
     }
-    .error {
-      color: #ff6b6b;
+    pre {
+      background: #0d0d1a;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
+      overflow-x: auto;
     }
-    .success {
-      color: #1dd1a1;
-    }
-    a.download-link {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #1dd1a1;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-    }
+    .error { color: #ff6b6b; }
+    .success { color: #1dd1a1; }
   </style>
 </head>
 <body>
@@ -80,16 +76,23 @@
           return;
         }
 
-        const data = await response.json(); // Adjust if response is not JSON
+        // Expect JSON back
+        const data = await response.json();
 
-        if (data.downloadUrl) {
-          result.innerHTML = `
-            <div class="success">Asset ready! Type: ${data.assetType || 'Unknown'}</div>
-            <a class="download-link" href="${data.downloadUrl}" download>Download Asset</a>
+        // Show raw JSON for debugging
+        result.innerHTML = `
+          <div class="success">Response received:</div>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+
+        // If server returns known fields, show them nicely
+        if (data.assetType || data.downloadUrl) {
+          result.innerHTML += `
+            <div class="success">Asset Type: ${data.assetType || 'Unknown'}</div>
+            ${data.downloadUrl ? `<a href="${data.downloadUrl}" download>Download Asset</a>` : ''}
           `;
-        } else {
-          result.innerHTML = '<div class="error">No download URL returned.</div>';
         }
+
       } catch (err) {
         result.innerHTML = `<div class="error">Request failed: ${err.message}</div>`;
       }
