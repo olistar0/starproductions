@@ -60,7 +60,7 @@ app.get("/group/:id", async (req, res) => {
     try {
         const response = await fetch(`https://groups.roblox.com/v1/groups/${id}`);
         const text = await response.text();
-        res.setHeader("Content-Type": "application/json");
+        res.setHeader("Content-Type", "application/json");
         res.send(text);
     } catch (err) {
         res.status(500).json({ error: "Group lookup error", details: err.toString() });
