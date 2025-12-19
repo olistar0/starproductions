@@ -97,7 +97,7 @@
             65% { transform: translate(0, 15px); }
             to { transform: translate(0, -0px); }
         }
-        
+
         .asset-container {
             display: flex;
             gap: 20px;
@@ -142,15 +142,10 @@ async function fetchThumbnail(assetId) {
     try {
         const res = await fetch(`https://api-starproductions.onrender.com/thumbnail/${assetId}`);
         const text = await res.text();
-
         if (!res.ok) return null;
-
         const data = JSON.parse(text);
-
         if (!data.data || !data.data[0] || !data.data[0].imageUrl) return null;
-
         return data.data[0].imageUrl;
-
     } catch {
         return null;
     }
@@ -167,6 +162,40 @@ async function lookup() {
     creatorBox.innerHTML = "";
 
     const backend = "https://api-starproductions.onrender.com";
+
+    if (ids && !cookie) {
+        const thumbUrl = await fetchThumbnail(ids);
+
+        if (!thumbUrl) {
+            assetBox.innerHTML = `<pre>{"error":"Could not fetch thumbnail."}</pre>`;
+            return;
+        }
+
+        assetBox.innerHTML = `
+            <div class="asset-container">
+                <div class="asset-left">
+                    <div class="glass">Thumbnail Only Mode</div>
+                    <div class="glass">Asset ID: ${ids}</div>
+                </div>
+                <div class="asset-right">
+                    <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                    <button style="
+                        background:#4a8;
+                        color:#000;
+                        padding:8px 12px;
+                        border-radius:8px;
+                        font-weight:bold;
+                        width:100%;
+                    " onclick="window.open('${thumbUrl}', '_blank')">
+                        Download
+                    </button>
+                </div>
+            </div>
+        `;
+
+        creatorBox.innerHTML = "";
+        return;
+    }
 
     try {
         const res = await fetch(backend + "/asset", {
@@ -193,17 +222,15 @@ async function lookup() {
 
         let downloadPanel = `
             <div class="asset-right">
-                <div style="margin-bottom:10px;">Image/Decal assets can be downloaded.</div>
-                 <button disabled style="
-                 background:#7a1f1f;
-                 color:#2a0000;
-                 padding:8px 12px;
-                 border-radius:8px;
-                 font-weight:bold;
-                 width:100%;
-                 ">
-                 Not Available for this asset.
-                 </button>
+                <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                <button disabled style="
+                    background:#7a1f1f;
+                    color:#2a0000;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    font-weight:bold;
+                    width:100%;
+                ">Not Available</button>
             </div>
         `;
 
@@ -213,7 +240,7 @@ async function lookup() {
             if (thumbUrl) {
                 downloadPanel = `
                     <div class="asset-right">
-                        <div style="margin-bottom:10px;">Image/Decal assets can be downloaded.</div>
+                        <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
                         <button style="
                             background:#4a8;
                             color:#000;
