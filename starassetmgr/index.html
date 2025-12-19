@@ -97,6 +97,26 @@
             65% { transform: translate(0, 15px); }
             to { transform: translate(0, -0px); }
         }
+        
+        .asset-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .asset-left {
+            flex: 1;
+        }
+
+        .asset-right {
+            width: 220px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(12px);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -107,7 +127,7 @@
 <input id="assetIds" placeholder="">
 
 <label>* .ROBLOSECURITY Cookie:</label>
-<input id="cookie" placeholder="*Required for a responce from the api*">
+<input id="cookie" placeholder="*Required for a response from the api*">
 
 <button onclick="lookup()">Execute</button>
 
@@ -171,34 +191,50 @@ async function lookup() {
 
         const asset = data.data[0];
 
-        let downloadButtonHTML = "";
+        let downloadPanel = `
+            <div class="asset-right">
+                <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                <button disabled style="
+                    background:#555;
+                    color:#222;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    font-weight:bold;
+                    width:100%;
+                ">Not Available</button>
+            </div>
+        `;
 
         if (asset.type === "Image" || asset.type === "Decal") {
             const thumbUrl = await fetchThumbnail(ids);
 
             if (thumbUrl) {
-                downloadButtonHTML = `
-                    <button style="
-                        float:right;
-                        margin-left:10px;
-                        background:#4a8;
-                        color:#000;
-                        padding:8px 12px;
-                        border-radius:8px;
-                        font-weight:bold;
-                    " onclick="window.open('${thumbUrl}', '_blank')">
-                        Download
-                    </button>
+                downloadPanel = `
+                    <div class="asset-right">
+                        <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                        <button style="
+                            background:#4a8;
+                            color:#000;
+                            padding:8px 12px;
+                            border-radius:8px;
+                            font-weight:bold;
+                            width:100%;
+                        " onclick="window.open('${thumbUrl}', '_blank')">
+                            Download
+                        </button>
+                    </div>
                 `;
             }
         }
 
         assetBox.innerHTML = `
-            <div class="glass" style="position:relative;">
-                ${downloadButtonHTML}
-                <div>Asset Name: ${asset.name}</div>
-                <div>Asset Type: ${asset.type}</div>
-                <div>Asset Moderated: ${asset.isModerated}</div>
+            <div class="asset-container">
+                <div class="asset-left">
+                    <div class="glass">Asset Name: ${asset.name}</div>
+                    <div class="glass">Asset Type: ${asset.type}</div>
+                    <div class="glass">Asset Moderated: ${asset.isModerated}</div>
+                </div>
+                ${downloadPanel}
             </div>
         `;
 
