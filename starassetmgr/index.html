@@ -194,14 +194,16 @@ async function lookup() {
         let downloadPanel = `
             <div class="asset-right">
                 <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                <button disabled style="
-                    background:#555;
-                    color:#222;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    font-weight:bold;
-                    width:100%;
-                ">Not Available</button>
+                 <button disabled style="
+                 background:#7a1f1f;
+                 color:#2a0000;
+                 padding:8px 12px;
+                 border-radius:8px;
+                 font-weight:bold;
+                 width:100%;
+                 ">
+                 Not Available for this asset.
+                 </button>
             </div>
         `;
 
@@ -211,7 +213,7 @@ async function lookup() {
             if (thumbUrl) {
                 downloadPanel = `
                     <div class="asset-right">
-                        <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                        <div style="margin-bottom:10px;">Image/Decal assets can be downloaded.</div>
                         <button style="
                             background:#4a8;
                             color:#000;
