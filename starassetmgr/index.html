@@ -51,6 +51,15 @@
             cursor: pointer;
             font-weight: bold;
             border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background: #cc8400;
+        }
+
+        button:active {
+            background: #b36f00;
         }
 
         pre {
@@ -88,22 +97,6 @@
             65% { transform: translate(0, 15px); }
             to { transform: translate(0, -0px); }
         }
-
-        /* ✅ Bottom-right status box */
-        #statusBox {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 260px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 12px;
-            background: rgba(0,0,0,0.45);
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            padding: 10px;
-            border-radius: 10px;
-        }
     </style>
 </head>
 <body>
@@ -124,30 +117,7 @@
 <h3>Creator Info</h3>
 <div id="creatorInfo" class="glass"></div>
 
-<div id="statusBox">Loading status...</div>
-
 <script>
-async function updateStatus() {
-    const box = document.getElementById("statusBox");
-
-    try {
-        const res = await fetch("https://api-starproductions.onrender.com/");
-        const text = await res.text();
-
-        if (!res.ok) {
-            box.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
-
-        box.innerHTML = `<pre>${text}</pre>`;
-    } catch (err) {
-        box.innerHTML = `<pre>${err}</pre>`;
-    }
-}
-
-updateStatus();
-setInterval(updateStatus, 5000);
-
 async function lookup() {
     const ids = document.getElementById("assetIds").value.trim();
     const cookie = document.getElementById("cookie").value.trim();
