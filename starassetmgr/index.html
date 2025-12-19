@@ -126,8 +126,8 @@
 <label>Asset ID:</label>
 <input id="assetIds" placeholder="">
 
-<label>* .ROBLOSECURITY Cookie:</label>
-<input id="cookie" placeholder="*Required for a response from the api*">
+<label>.ROBLOSECURITY Cookie:</label>
+<input id="cookie" type="password" placeholder="*Required for asset infomation. Do not need it for just downloading Image/Decal Assets*">
 
 <button onclick="lookup()">Execute</button>
 
@@ -174,7 +174,7 @@ async function lookup() {
         assetBox.innerHTML = `
             <div class="asset-container">
                 <div class="asset-left">
-                    <div class="glass">Thumbnail Only Mode</div>
+                    <div class="glass">Image/Decal Assets download only. Need to input cookie for infomation.</div>
                     <div class="glass">Asset ID: ${ids}</div>
                 </div>
                 <div class="asset-right">
