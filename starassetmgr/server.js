@@ -12,14 +12,14 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("StarAssets is running!");
+    res.send("StarAssetMgr is running!");
 });
 
 app.post("/asset", async (req, res) => {
     const { ids, cookie } = req.body;
 
     if (!ids || !cookie) {
-        return res.status(400).json({ error: "Missing roblox asset id or ROBOSECURITY cookie." });
+        return res.status(400).json({ error: "Missing Roblox Asset ID or ROBLOSECURITY cookie." });
     }
 
     const url = "https://develop.roblox.com/v1/assets?assetIds=" + ids;
