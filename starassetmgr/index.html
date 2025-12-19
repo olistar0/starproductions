@@ -118,6 +118,24 @@
 <div id="creatorInfo" class="glass"></div>
 
 <script>
+async function fetchThumbnail(assetId) {
+    try {
+        const res = await fetch(`https://api-starproductions.onrender.com/thumbnail/${assetId}`);
+        const text = await res.text();
+
+        if (!res.ok) return null;
+
+        const data = JSON.parse(text);
+
+        if (!data.data || !data.data[0] || !data.data[0].imageUrl) return null;
+
+        return data.data[0].imageUrl;
+
+    } catch {
+        return null;
+    }
+}
+
 async function lookup() {
     const ids = document.getElementById("assetIds").value.trim();
     const cookie = document.getElementById("cookie").value.trim();
@@ -153,10 +171,35 @@ async function lookup() {
 
         const asset = data.data[0];
 
+        let downloadButtonHTML = "";
+
+        if (asset.type === "Image" || asset.type === "Decal") {
+            const thumbUrl = await fetchThumbnail(ids);
+
+            if (thumbUrl) {
+                downloadButtonHTML = `
+                    <button style="
+                        float:right;
+                        margin-left:10px;
+                        background:#4a8;
+                        color:#000;
+                        padding:8px 12px;
+                        border-radius:8px;
+                        font-weight:bold;
+                    " onclick="window.open('${thumbUrl}', '_blank')">
+                        Download
+                    </button>
+                `;
+            }
+        }
+
         assetBox.innerHTML = `
-            <div class="glass">Asset Name: ${asset.name}</div>
-            <div class="glass">Asset Type: ${asset.type}</div>
-            <div class="glass">Asset Moderated: ${asset.isModerated}</div>
+            <div class="glass" style="position:relative;">
+                ${downloadButtonHTML}
+                <div>Asset Name: ${asset.name}</div>
+                <div>Asset Type: ${asset.type}</div>
+                <div>Asset Moderated: ${asset.isModerated}</div>
+            </div>
         `;
 
         const creator = asset.creator;
