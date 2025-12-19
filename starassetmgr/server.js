@@ -50,7 +50,7 @@ app.get("/user/:id", async (req, res) => {
         res.setHeader("Content-Type", "application/json");
         res.send(text);
     } catch (err) {
-        res.status(500).json({ error: "User lookup error", details: err.toString() });
+        res.status(500).json({ error: "Roblox USER API error", details: err.toString() });
     }
 });
 
@@ -63,7 +63,24 @@ app.get("/group/:id", async (req, res) => {
         res.setHeader("Content-Type", "application/json");
         res.send(text);
     } catch (err) {
-        res.status(500).json({ error: "Group lookup error", details: err.toString() });
+        res.status(500).json({ error: "Roblox GROUPS API error", details: err.toString() });
+    }
+});
+
+app.get("/thumbnail/:id", async (req, res) => {
+    const id = req.params.id;
+
+    const url = `https://thumbnails.roblox.com/v1/assets?assetIds=${id}&size=420x420&format=Png&isCircular=false`;
+
+    try {
+        const response = await fetch(url);
+        const text = await response.text();
+
+        res.setHeader("Content-Type", "application/json");
+        res.send(text);
+
+    } catch (err) {
+        res.status(500).json({ error: "Roblox THUMBNAIL API error", details: err.toString() });
     }
 });
 
