@@ -290,12 +290,22 @@ async function lookup() {
             `;
         }
 
-        const aaPanel = `
-            <div style="margin-top:15px;">
-                <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
-                ${aaButton}
-            </div>
-        `;
+const aaPanel = `
+    <div id="aaPanel" style="margin-top:15px; position: relative;">
+        <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
+        ${aaButton}
+        <div id="aaError" style="
+            display:none;
+            background:#7a1f1f;
+            color:#fff;
+            padding:8px;
+            border-radius:8px;
+            margin-top:10px;
+            text-align:center;
+            font-weight:bold;
+        "></div>
+    </div>
+`;
 
         assetBox.innerHTML = `
             <div class="asset-container">
@@ -382,10 +392,18 @@ async function fetchUser(userId) {
         const res = await fetch(`${backend}/user/${userId}`);
         const text = await res.text();
 
-        if (!res.ok) {
-            creatorBox.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
+if (!res.ok) {
+    const aaError = document.getElementById("aaError");
+    if (aaError) {
+        aaError.innerText = JSON.parse(text).error || "Unknown error";
+        aaError.style.display = "block";
+
+        setTimeout(() => {
+            aaError.style.display = "none";
+        }, 3000);
+    }
+    return;
+}
 
         const user = JSON.parse(text);
 
