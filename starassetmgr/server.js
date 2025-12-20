@@ -155,7 +155,7 @@ app.post("/delivery", async (req, res) => {
 
     if (!resolvedPlaceId || !resolvedGameId) {
       return res.status(400).json({
-        error: "Could not resolve Roblox-Place-Id or Roblox-Game-Id.",
+        error: "Cound not find PlaceID or UniverseID/GameID. Try putting the Place ID in the box above.",
         details: { resolvedPlaceId, resolvedGameId }
       });
     }
@@ -185,8 +185,7 @@ app.post("/delivery", async (req, res) => {
 
     if (!json.location) {
       return res.status(500).json({
-        error: "No 'location' field in AssetDelivery response.",
-        body: json
+        error: "Cound not find PlaceID or UniverseID/GameID. Try putting the Place ID in the box above."
       });
     }
 
@@ -197,7 +196,7 @@ app.post("/delivery", async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: "AssetDelivery proxy error", details: err.toString() });
+    res.status(500).json({ error: "Roblox ASSETDELIVERY API error", details: err.toString() });
   }
 });
 
