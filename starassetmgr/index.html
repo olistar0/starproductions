@@ -210,17 +210,31 @@ async function lookup() {
 
         const text = await res.text();
 
-        if (!res.ok) {
-            assetBox.innerHTML = `<pre>${text}</pre>`;
+if (!res.ok) {
+    try {
+        const err = JSON.parse(text);
+        if (err.error && err.error.includes("PlaceID")) {
             return;
         }
+    } catch {}
+
+    assetBox.innerHTML = `<pre>${text}</pre>`;
+    return;
+}
 
         const data = JSON.parse(text);
 
-        if (!data.data || !data.data[0]) {
-            assetBox.innerHTML = `<pre>${text}</pre>`;
+if (!data.data || !data.data[0]) {
+    try {
+        const err = JSON.parse(text);
+        if (err.error && err.error.includes("PlaceID")) {
             return;
         }
+    } catch {}
+
+    assetBox.innerHTML = `<pre>${text}</pre>`;
+    return;
+}
 
         const asset = data.data[0];
         const creator = asset.creator || {};
@@ -314,10 +328,10 @@ const aaPanel = `
                     <div class="glass">Asset Type: ${asset.type}</div>
                     <div class="glass">Asset Moderated: ${asset.isModerated}</div>
                 </div>
-                <div class="asset-right">
-                    ${imagePanel}
-                    ${aaPanel}
-                </div>
+<div id="assetRight" class="asset-right">
+    ${imagePanel}
+    ${aaPanel}
+</div>
             </div>
         `;
 
@@ -356,10 +370,32 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         const text = await res.text();
 
-        if (!res.ok) {
-            assetBox.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
+if (!res.ok) {
+    const rightBox = document.getElementById("assetRight");
+
+    if (rightBox) {
+        const originalHTML = rightBox.innerHTML;
+
+        rightBox.innerHTML = `
+            <div style="
+                background:#7a1f1f;
+                color:#fff;
+                padding:12px;
+                border-radius:10px;
+                text-align:center;
+                font-weight:bold;
+            ">
+                ${JSON.parse(text).error || "Unknown error"}
+            </div>
+        `;
+
+        setTimeout(() => {
+            rightBox.innerHTML = originalHTML;
+        }, 3000);
+    }
+
+    return;
+}
 
         const data = JSON.parse(text);
 let url = data.location;
