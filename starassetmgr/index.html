@@ -236,7 +236,7 @@ async function lookup() {
                 border-radius:8px;
                 font-weight:bold;
                 width:100%;
-            ">Not Available</button>
+            ">Not Available for this asset.</button>
         `;
 
         if (asset.type === "Image" || asset.type === "Decal") {
@@ -285,7 +285,7 @@ async function lookup() {
                     width:100%;
                     margin-top:8px;
                 ">
-                    Not Available
+                    Not Available for this asset.
                 </button>
             `;
         }
@@ -352,15 +352,24 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         }
 
         const data = JSON.parse(text);
-        let url = data.location;
+let url = data.location;
 
-        if (assetType === "Animation") {
-            url += (url.includes("?") ? "&" : "?") + "starExt=.rbxm";
-        } else if (assetType === "Audio") {
-            url += (url.includes("?") ? "&" : "?") + "starExt=.ogg";
-        }
+let extension = "";
+if (assetType === "Animation") extension = ".rbxm";
+else if (assetType === "Audio") extension = ".ogg";
 
-        window.open(url, "_blank");
+const fileRes = await fetch(data.location);
+const fileBuffer = await fileRes.arrayBuffer();
+
+const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
+const downloadUrl = URL.createObjectURL(blob);
+
+const a = document.createElement("a");
+a.href = downloadUrl;
+a.download = assetId + extension;
+a.click();
+
+URL.revokeObjectURL(downloadUrl);
     } catch (err) {
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
