@@ -139,10 +139,16 @@
 <script>
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
+    function extractId(input) {
+    const match = input.match(/\d+/);
+    return match ? match[0] : null;
+}
+
 let executeCooldown = false;
 
 async function fetchThumbnail(assetId) {
     try {
+        assetId = extractId(assetId);
         const res = await fetch(`${backend}/thumbnail/${assetId}`);
         const text = await res.text();
         if (!res.ok) return null;
@@ -176,7 +182,7 @@ async function lookup() {
 }
 
 async function runLookup() {
-    const ids = document.getElementById("assetIds").value.trim();
+    const ids = extractId(document.getElementById("assetIds").value.trim());
     const placeInput = document.getElementById("placeId").value.trim();
 
     const assetBox = document.getElementById("assetInfo");
@@ -269,6 +275,7 @@ async function runLookup() {
 }
 
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
+    assetId = extractId(assetId);
     const placeInput = document.getElementById("placeId").value.trim();
     const assetRight = document.getElementById("assetRight");
     const assetBox = document.getElementById("assetInfo");
