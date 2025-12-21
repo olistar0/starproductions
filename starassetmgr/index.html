@@ -334,11 +334,11 @@ async function fetchUser(userId) {
         const user = JSON.parse(text);
 
         creatorBox.innerHTML = `
-            <div class="glass">Creator Type: ${asset.creator.type}</div>
+            <div class="glass">Creator Type: User</div>
             <div class="glass">Username: ${user.name}</div>
             <div class="glass">Display Name: ${user.displayName}</div>
-            <div class="glass">Verified: ${user.hasVerifiedBadge}</div>
-            <div class="glass">Banned: ${user.isBanned}</div>
+            <div class="glass">Verified Status: ${user.hasVerifiedBadge}</div>
+            <div class="glass">Banned Status: ${user.isBanned}</div>
         `;
     } catch (err) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
@@ -360,11 +360,12 @@ async function fetchGroup(groupId) {
         const group = JSON.parse(text);
 
         creatorBox.innerHTML = `
-            <div class="glass">Creator Type: ${asset.creator.type}</div>
-            <div class="glass">Group Name: ${group.name}</div>
-            <div class="glass">Group Verified: ${group.hasVerifiedBadge}</div>
-            <div class="glass">Owner Username: ${group.owner.username}</div>
-            <div class="glass">Owner Display Name: ${group.owner.displayName}</div>
+            <div class="glass">Creator Type: Group</div>
+            <div class="glass">Name: ${group.name}</div>
+            <div class="glass">Verified Status: ${group.hasVerifiedBadge}</div>
+            <div class="glass">Owner's Username: ${group.owner.username}</div>
+            <div class="glass">Owner's Display Name: ${group.owner.displayName}</div>
+            <div class="glass">Owner's >Verified Status: ${group.owner.hasVerifiedBadge}</div>
         `;
     } catch (err) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
