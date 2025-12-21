@@ -267,7 +267,7 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
             const rightBox = document.getElementById("assetRight");
             if (rightBox) {
                 const originalHTML = rightBox.innerHTML;
-                rightBox.innerHTML = `<div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;">${JSON.parse(text).error || "Unknown error"}</div>`;
+                rightBox.innerHTML = `<div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
                 setTimeout(() => rightBox.innerHTML = originalHTML, 3000);
             }
             return;
