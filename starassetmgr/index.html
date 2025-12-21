@@ -1,11 +1,11 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Star Asset Manager</title>
     <link rel="shortcut icon" href="https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/assets/tabicon.png">
     <meta name="title" content="Star Productions - Star Asset Manager">
     <meta name="theme-color" content="#1d1d1d">
-    <meta name="description" content="View the details of Roblox Assets and download then!" />
+    <meta name="description" content="View the details of Roblox Assets and download them!" />
     <style>
         :root {
             --bg-url: url('https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/assets/bg.png');
@@ -26,7 +26,6 @@ a<!DOCTYPE html>
             background: rgba(0,0,0,0.35);
             border: 1px solid rgba(255,255,255,0.2);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             padding: 15px;
             border-radius: 12px;
             margin-top: 10px;
@@ -124,89 +123,20 @@ a<!DOCTYPE html>
 <div class="logo logo-animated"></div>
 
 <label>Asset ID:</label>
-<input id="assetIds" placeholder="">
+<input id="assetIds" placeholder="123456789">
 
-<label>.ROBLOSECURITY Cookie:</label>
-<input id="cookie" type="password" placeholder="*Required for asset infomation and downloading Animation/Audio Assets. Do not need it for just downloading Image/Decal Assets*">
-
-<label>Place ID (ONLY NEED FOR DOWNLOADING ANIMATION/AUDIO ASSETS):</label>
-<input id="placeId" placeholder="Not required but would help for downloading Animation/Audio assets. (If it fails when you put it in try without) If it still fails it can not get it.">
+<label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
+<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails. (If it fails with an id inside try without because it might find it.)">
 
 <button onclick="lookup()">Execute</button>
 
-<h3>Asset Info</h3>
+<h3>Asset Info & Downloads</h3>
 <div id="assetInfo" class="glass"></div>
 
 <h3>Creator Info</h3>
 <div id="creatorInfo" class="glass"></div>
 
 <script>
-
-const AssetTypeNames = {
-  1: "Image",
-  2: "TShirt",
-  3: "Audio",
-  4: "Mesh",
-  5: "Lua",
-  8: "Hat",
-  9: "Place",
-  10: "Model",
-  11: "Shirt",
-  12: "Pants",
-  13: "Decal",
-  17: "Head",
-  18: "Face",
-  19: "Gear",
-  21: "Badge",
-  24: "Animation",
-  27: "Torso",
-  28: "RightArm",
-  29: "LeftArm",
-  30: "LeftLeg",
-  31: "RightLeg",
-  32: "Package",
-  34: "GamePass",
-  38: "Plugin",
-  40: "MeshPart",
-  41: "HairAccessory",
-  42: "FaceAccessory",
-  43: "NeckAccessory",
-  44: "ShoulderAccessory",
-  45: "FrontAccessory",
-  46: "BackAccessory",
-  47: "WaistAccessory",
-  48: "ClimbAnimation",
-  49: "DeathAnimation",
-  50: "FallAnimation",
-  51: "IdleAnimation",
-  52: "JumpAnimation",
-  53: "RunAnimation",
-  54: "SwimAnimation",
-  55: "WalkAnimation",
-  56: "PoseAnimation",
-  57: "EarAccessory",
-  58: "EyeAccessory",
-  61: "EmoteAnimation",
-  62: "Video",
-  64: "TShirtAccessory",
-  65: "ShirtAccessory",
-  66: "PantsAccessory",
-  67: "JacketAccessory",
-  68: "SweaterAccessory",
-  69: "ShortsAccessory",
-  70: "LeftShoeAccessory",
-  71: "RightShoeAccessory",
-  72: "DressSkirtAccessory",
-  73: "FontFamily",
-  76: "EyebrowAccessory",
-  77: "EyelashAccessory",
-  78: "MoodAnimation",
-  79: "DynamicHead",
-  88: "FaceMakeup",
-  89: "LipMakeup",
-  90: "EyeMakeup"
-}
-    
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
 async function fetchThumbnail(assetId) {
@@ -224,7 +154,6 @@ async function fetchThumbnail(assetId) {
 
 async function lookup() {
     const ids = document.getElementById("assetIds").value.trim();
-    const cookie = document.getElementById("cookie").value.trim();
     const placeInput = document.getElementById("placeId").value.trim();
 
     const assetBox = document.getElementById("assetInfo");
@@ -233,193 +162,92 @@ async function lookup() {
     assetBox.innerHTML = "Loading...";
     creatorBox.innerHTML = "";
 
-    if (ids && !cookie) {
-        const thumbUrl = await fetchThumbnail(ids);
-
-        if (!thumbUrl) {
-            assetBox.innerHTML = `<pre>{"error":"Could not fetch thumbnail."}</pre>`;
-            return;
-        }
-
-        assetBox.innerHTML = `
-            <div class="asset-container">
-                <div class="asset-left">
-                    <div class="glass">Image/Decal Assets download only. Need to input cookie for infomation.</div>
-                    <div class="glass">Asset ID: ${ids}</div>
-                </div>
-                <div class="asset-right">
-                    <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                    <button style="
-                        background:#4a8;
-                        color:#000;
-                        padding:8px 12px;
-                        border-radius:8px;
-                        font-weight:bold;
-                        width:100%;
-                    " onclick="window.open('${thumbUrl}', '_blank')">
-                        Download
-                    </button>
-                </div>
-            </div>
-        `;
-
-        creatorBox.innerHTML = "";
-        return;
-    }
-
     try {
         const res = await fetch(backend + "/asset", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids, cookie })
+            body: JSON.stringify({ ids })
         });
 
         const text = await res.text();
 
-if (!res.ok) {
-    try {
-        const err = JSON.parse(text);
-        if (err.error && err.error.includes("PlaceID")) {
+        if (!res.ok) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
-    } catch {}
-
-    assetBox.innerHTML = `<pre>${text}</pre>`;
-    return;
-}
 
         const data = JSON.parse(text);
 
-if (!data.data || !data.data[0]) {
-    try {
-        const err = JSON.parse(text);
-        if (err.error && err.error.includes("PlaceID")) {
+        if (!data.data || !data.data[0]) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
-    } catch {}
-
-    assetBox.innerHTML = `<pre>${text}</pre>`;
-    return;
-}
 
         const asset = data.data[0];
         const creator = asset.creator || {};
         const creatorType = creator.type || null;
         const creatorId = creator.targetId || null;
 
+        const typeName = asset.type;
+
         let imagePanel = `
             <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-            <button disabled style="
-                background:#7a1f1f;
-                color:#2a0000;
-                padding:8px 12px;
-                border-radius:8px;
-                font-weight:bold;
-                width:100%;
-            ">Not Available for this asset.</button>
+            <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;">Not Available</button>
         `;
 
-        if (asset.type === "Image" || asset.type === "Decal") {
+        if (typeName === "Image" || typeName === "Decal") {
             const thumbUrl = await fetchThumbnail(ids);
-
             if (thumbUrl) {
                 imagePanel = `
                     <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                    <button style="
-                        background:#4a8;
-                        color:#000;
-                        padding:8px 12px;
-                        border-radius:8px;
-                        font-weight:bold;
-                        width:100%;
-                    " onclick="window.open('${thumbUrl}', '_blank')">
-                        Download
-                    </button>
+                    <button style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;" onclick="window.open('${thumbUrl}', '_blank')">Download</button>
                 `;
             }
         }
 
         let aaButton;
-        if (asset.type === "Animation" || asset.type === "Audio") {
+        if (typeName === "Animation" || typeName === "Audio") {
             aaButton = `
-                <button style="
-                    background:#4a8;
-                    color:#000;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    font-weight:bold;
-                    width:100%;
-                    margin-top:8px;
-                " onclick="downloadAsset('${ids}', '${asset.type}', '${creatorType}', '${creatorId}')">
-                    Download
-                </button>
+                <button style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
             `;
         } else {
             aaButton = `
-                <button disabled style="
-                    background:#7a1f1f;
-                    color:#2a0000;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    font-weight:bold;
-                    width:100%;
-                    margin-top:8px;
-                ">
-                    Not Available for this asset.
-                </button>
+                <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;">Not Available</button>
             `;
         }
 
-const aaPanel = `
-    <div id="aaPanel" style="margin-top:15px; position: relative;">
-        <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
-        ${aaButton}
-        <div id="aaError" style="
-            display:none;
-            background:#7a1f1f;
-            color:#fff;
-            padding:8px;
-            border-radius:8px;
-            margin-top:10px;
-            text-align:center;
-            font-weight:bold;
-        "></div>
-    </div>
-`;
+        const aaPanel = `
+            <div id="aaPanel" style="margin-top:15px;">
+                <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
+                ${aaButton}
+            </div>
+        `;
 
         assetBox.innerHTML = `
             <div class="asset-container">
                 <div class="asset-left">
                     <div class="glass">Asset Name: ${asset.name}</div>
-                    <div class="glass">Asset Type: ${asset.type}</div>
+                    <div class="glass">Asset Type: ${typeName}</div>
                     <div class="glass">Asset Moderated: ${asset.isModerated}</div>
                 </div>
-<div id="assetRight" class="asset-right">
-    ${imagePanel}
-    ${aaPanel}
-</div>
+                <div id="assetRight" class="asset-right">
+                    ${imagePanel}
+                    ${aaPanel}
+                </div>
             </div>
         `;
 
-        if (creatorType === "User") {
-            fetchUser(creatorId);
-        } else if (creatorType === "Group") {
-            fetchGroup(creatorId);
-        }
+        if (creatorType === "User") fetchUser(creatorId);
+        if (creatorType === "Group") fetchGroup(creatorId);
+
     } catch (err) {
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
 
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
-    const cookie = document.getElementById("cookie").value.trim();
     const placeInput = document.getElementById("placeId").value.trim();
     const assetBox = document.getElementById("assetInfo");
-
-    if (!cookie) {
-        assetBox.innerHTML = `<pre>{"error":"Cookie is required to download Animation/Audio assets."}</pre>`;
-        return;
-    }
 
     try {
         const res = await fetch(backend + "/delivery", {
@@ -427,7 +255,6 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 assetId,
-                cookie,
                 placeId: placeInput || null,
                 creatorId: creatorId || null,
                 creatorType: creatorType || null
@@ -436,52 +263,34 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         const text = await res.text();
 
-if (!res.ok) {
-    const rightBox = document.getElementById("assetRight");
-
-    if (rightBox) {
-        const originalHTML = rightBox.innerHTML;
-
-        rightBox.innerHTML = `
-            <div style="
-                background:#7a1f1f;
-                color:#fff;
-                padding:12px;
-                border-radius:10px;
-                text-align:center;
-                font-weight:bold;
-            ">
-                ${JSON.parse(text).error || "Unknown error"}
-            </div>
-        `;
-
-        setTimeout(() => {
-            rightBox.innerHTML = originalHTML;
-        }, 3000);
-    }
-
-    return;
-}
+        if (!res.ok) {
+            const rightBox = document.getElementById("assetRight");
+            if (rightBox) {
+                const originalHTML = rightBox.innerHTML;
+                rightBox.innerHTML = `<div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;">${JSON.parse(text).error || "Unknown error"}</div>`;
+                setTimeout(() => rightBox.innerHTML = originalHTML, 3000);
+            }
+            return;
+        }
 
         const data = JSON.parse(text);
-let url = data.location;
+        const fileRes = await fetch(data.location);
+        const fileBuffer = await fileRes.arrayBuffer();
 
-let extension = "";
-if (assetType === "Animation") extension = ".rbxm";
-else if (assetType === "Audio") extension = ".ogg";
+        let extension = "";
+        if (assetType === "Animation") extension = ".rbxm";
+        if (assetType === "Audio") extension = ".ogg";
 
-const fileRes = await fetch(data.location);
-const fileBuffer = await fileRes.arrayBuffer();
+        const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
+        const downloadUrl = URL.createObjectURL(blob);
 
-const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
-const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = assetId + extension;
+        a.click();
 
-const a = document.createElement("a");
-a.href = downloadUrl;
-a.download = assetId + extension;
-a.click();
+        URL.revokeObjectURL(downloadUrl);
 
-URL.revokeObjectURL(downloadUrl);
     } catch (err) {
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
@@ -494,18 +303,10 @@ async function fetchUser(userId) {
         const res = await fetch(`${backend}/user/${userId}`);
         const text = await res.text();
 
-if (!res.ok) {
-    const aaError = document.getElementById("aaError");
-    if (aaError) {
-        aaError.innerText = JSON.parse(text).error || "Unknown error";
-        aaError.style.display = "block";
-
-        setTimeout(() => {
-            aaError.style.display = "none";
-        }, 3000);
-    }
-    return;
-}
+        if (!res.ok) {
+            creatorBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
 
         const user = JSON.parse(text);
 
