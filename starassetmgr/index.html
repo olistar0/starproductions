@@ -115,7 +115,12 @@
             padding: 15px;
             border-radius: 12px;
             text-align: center;
-            transition: box-shadow 0.25s ease, border 0.25s ease;
+            transition: opacity 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+        }
+
+        .cooldown-dim {
+            opacity: 0.45;
+            filter: blur(1px);
         }
 
         .highlight-success {
@@ -137,7 +142,7 @@
 <input id="assetIds" placeholder="123456789">
 
 <label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
-<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails. (If it fails with an id inside try without because it might find it.)">
+<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
 
 <button onclick="lookup()">Execute</button>
 
@@ -150,7 +155,6 @@
 <script>
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
-// cache delivery results per assetId, invalidated when placeId changes
 let deliveryCache = {};
 let lastPlaceId = "";
 let executeCooldown = false;
@@ -161,38 +165,38 @@ async function fetchThumbnail(assetId) {
         const text = await res.text();
         if (!res.ok) return null;
         const data = JSON.parse(text);
-        if (!data.data || !data.data[0] || !data.data[0].imageUrl) return null;
-        return data.data[0].imageUrl;
+        return data?.data?.[0]?.imageUrl || null;
     } catch {
         return null;
     }
 }
 
-// Entry point for Execute button (with cooldown)
 async function lookup() {
+    if (executeCooldown) return;
+
     const assetBox = document.getElementById("assetInfo");
     const creatorBox = document.getElementById("creatorInfo");
-
-    if (executeCooldown) return;
+    const rightBox = document.getElementById("assetRight");
 
     executeCooldown = true;
     let remaining = 3;
 
-    const cooldownInterval = setInterval(() => {
+    if (rightBox) rightBox.classList.add("cooldown-dim");
+    creatorBox.innerHTML = "";
+
+    const interval = setInterval(() => {
         assetBox.innerHTML = `Please wait before executing again. Cooldown: ${remaining}s`;
-        creatorBox.innerHTML = "";
         remaining--;
         if (remaining < 0) {
-            clearInterval(cooldownInterval);
-            assetBox.innerHTML = "Loading...";
+            clearInterval(interval);
             runLookup().finally(() => {
                 executeCooldown = false;
+                if (rightBox) rightBox.classList.remove("cooldown-dim");
             });
         }
     }, 1000);
 }
 
-// Actual logic once cooldown finishes
 async function runLookup() {
     const ids = document.getElementById("assetIds").value.trim();
     const placeInput = document.getElementById("placeId").value.trim();
@@ -201,6 +205,7 @@ async function runLookup() {
     const creatorBox = document.getElementById("creatorInfo");
 
     creatorBox.innerHTML = "";
+    assetBox.innerHTML = "Loading...";
 
     try {
         const res = await fetch(backend + "/asset", {
@@ -210,24 +215,21 @@ async function runLookup() {
         });
 
         const text = await res.text();
-
         if (!res.ok) {
             assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
 
         const data = JSON.parse(text);
-
-        if (!data.data || !data.data[0]) {
+        const asset = data?.data?.[0];
+        if (!asset) {
             assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
 
-        const asset = data.data[0];
         const creator = asset.creator || {};
         const creatorType = creator.type || null;
         const creatorId = creator.targetId || null;
-
         const typeName = asset.type;
 
         let imagePanel = `
@@ -285,35 +287,29 @@ async function runLookup() {
     }
 }
 
-// Delivery/download with caching + highlight
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     const placeInput = document.getElementById("placeId").value.trim();
-    const assetRight = document.getElementById("assetRight");
+    const rightBox = document.getElementById("assetRight");
     const assetBox = document.getElementById("assetInfo");
 
-    if (!assetRight) return;
+    if (!rightBox) return;
 
-    // If PlaceID changed, invalidate cache
     if (placeInput !== lastPlaceId) {
         deliveryCache = {};
         lastPlaceId = placeInput;
     }
 
-    // If we have cached result for this asset, reuse it
     if (deliveryCache[assetId]) {
         const cached = deliveryCache[assetId];
 
         if (cached.success) {
-            assetRight.classList.add("highlight-success");
-            setTimeout(() => assetRight.classList.remove("highlight-success"), 1500);
+            rightBox.classList.add("highlight-success");
+            setTimeout(() => rightBox.classList.remove("highlight-success"), 1500);
             return triggerDownload(assetId, assetType, cached.data.location);
         } else {
-            assetRight.classList.add("highlight-fail");
-            setTimeout(() => assetRight.classList.remove("highlight-fail"), 1500);
-            // Optionally show the last error message again
-            if (cached.message) {
-                assetBox.innerHTML = `<pre>${cached.message}</pre>`;
-            }
+            rightBox.classList.add("highlight-fail");
+            setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
+            assetBox.innerHTML = `<pre>${cached.message}</pre>`;
             return;
         }
     }
@@ -334,31 +330,29 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         if (!res.ok) {
             deliveryCache[assetId] = { success: false, message: text };
-            assetRight.classList.add("highlight-fail");
-            setTimeout(() => assetRight.classList.remove("highlight-fail"), 1500);
+            rightBox.classList.add("highlight-fail");
+            setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
             assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
 
         const data = JSON.parse(text);
-
         deliveryCache[assetId] = { success: true, data };
 
-        assetRight.classList.add("highlight-success");
-        setTimeout(() => assetRight.classList.remove("highlight-success"), 1500);
+        rightBox.classList.add("highlight-success");
+        setTimeout(() => rightBox.classList.remove("highlight-success"), 1500);
 
         return triggerDownload(assetId, assetType, data.location);
 
     } catch (err) {
         const msg = err.toString();
         deliveryCache[assetId] = { success: false, message: msg };
-        assetRight.classList.add("highlight-fail");
-        setTimeout(() => assetRight.classList.remove("highlight-fail"), 1500);
+        rightBox.classList.add("highlight-fail");
+        setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
         assetBox.innerHTML = `<pre>${msg}</pre>`;
     }
 }
 
-// Low-level download helper
 async function triggerDownload(assetId, assetType, url) {
     const fileRes = await fetch(url);
     const fileBuffer = await fileRes.arrayBuffer();
