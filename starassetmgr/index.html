@@ -155,9 +155,9 @@
 <script>
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
+let executeCooldown = false;
 let deliveryCache = {};
 let lastPlaceId = "";
-let executeCooldown = false;
 
 async function fetchThumbnail(assetId) {
     try {
@@ -185,14 +185,13 @@ async function lookup() {
     creatorBox.innerHTML = "";
 
     const interval = setInterval(() => {
-        assetBox.innerHTML = `Please wait before executing again. Cooldown: ${remaining}s`;
+        assetBox.innerHTML = `Loading... Please wait ${remaining}s`;
         remaining--;
         if (remaining < 0) {
             clearInterval(interval);
-            runLookup().finally(() => {
-                executeCooldown = false;
-                if (rightBox) rightBox.classList.remove("cooldown-dim");
-            });
+            if (rightBox) rightBox.classList.remove("cooldown-dim");
+            executeCooldown = false;
+            runLookup();
         }
     }, 1000);
 }
