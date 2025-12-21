@@ -115,22 +115,6 @@
             padding: 15px;
             border-radius: 12px;
             text-align: center;
-            transition: opacity 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
-        }
-
-        .cooldown-dim {
-            opacity: 0.45;
-            filter: blur(1px);
-        }
-
-        .highlight-success {
-            box-shadow: 0 0 18px #4aff8a;
-            border: 1px solid #4aff8a;
-        }
-
-        .highlight-fail {
-            box-shadow: 0 0 18px #ff4a4a;
-            border: 1px solid #ff4a4a;
         }
     </style>
 </head>
@@ -142,7 +126,7 @@
 <input id="assetIds" placeholder="123456789">
 
 <label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
-<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
+<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails. (If it fails with an id inside try without because it might find it.)">
 
 <button onclick="lookup()">Execute</button>
 
@@ -156,8 +140,6 @@
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
 let executeCooldown = false;
-let deliveryCache = {};
-let lastPlaceId = "";
 
 async function fetchThumbnail(assetId) {
     try {
@@ -165,7 +147,8 @@ async function fetchThumbnail(assetId) {
         const text = await res.text();
         if (!res.ok) return null;
         const data = JSON.parse(text);
-        return data?.data?.[0]?.imageUrl || null;
+        if (!data.data || !data.data[0] || !data.data[0].imageUrl) return null;
+        return data.data[0].imageUrl;
     } catch {
         return null;
     }
@@ -176,20 +159,16 @@ async function lookup() {
 
     const assetBox = document.getElementById("assetInfo");
     const creatorBox = document.getElementById("creatorInfo");
-    const rightBox = document.getElementById("assetRight");
 
     executeCooldown = true;
     let remaining = 3;
 
-    if (rightBox) rightBox.classList.add("cooldown-dim");
-    creatorBox.innerHTML = "";
-
     const interval = setInterval(() => {
-        assetBox.innerHTML = `Loading... Please wait ${remaining}s`;
+        assetBox.innerHTML = `Loading... (${remaining})`;
+        creatorBox.innerHTML = "";
         remaining--;
         if (remaining < 0) {
             clearInterval(interval);
-            if (rightBox) rightBox.classList.remove("cooldown-dim");
             executeCooldown = false;
             runLookup();
         }
@@ -214,31 +193,24 @@ async function runLookup() {
         });
 
         const text = await res.text();
+
         if (!res.ok) {
             assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
 
         const data = JSON.parse(text);
-        const asset = data?.data?.[0];
-if (!asset) {
-    assetBox.innerHTML = `<pre>${text}</pre>`;
-    document.getElementById("assetInfo").innerHTML += `
-        <div id="assetRight" class="asset-right">
-            <div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:10px;">
-                Could not load asset.
-            </div>
-            <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;">
-                Not Available
-            </button>
-        </div>
-    `;
-    return;
-}
 
+        if (!data.data || !data.data[0]) {
+            assetBox.innerHTML = `<pre>${text}</pre>`;
+            return;
+        }
+
+        const asset = data.data[0];
         const creator = asset.creator || {};
         const creatorType = creator.type || null;
         const creatorId = creator.targetId || null;
+
         const typeName = asset.type;
 
         let imagePanel = `
@@ -259,7 +231,7 @@ if (!asset) {
         let aaButton;
         if (typeName === "Animation" || typeName === "Audio") {
             aaButton = `
-                <button id="aaDownloadBtn" style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
+                <button style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
             `;
         } else {
             aaButton = `
@@ -298,30 +270,8 @@ if (!asset) {
 
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     const placeInput = document.getElementById("placeId").value.trim();
-    const rightBox = document.getElementById("assetRight");
+    const assetRight = document.getElementById("assetRight");
     const assetBox = document.getElementById("assetInfo");
-
-    if (!rightBox) return;
-
-    if (placeInput !== lastPlaceId) {
-        deliveryCache = {};
-        lastPlaceId = placeInput;
-    }
-
-    if (deliveryCache[assetId]) {
-        const cached = deliveryCache[assetId];
-
-        if (cached.success) {
-            rightBox.classList.add("highlight-success");
-            setTimeout(() => rightBox.classList.remove("highlight-success"), 1500);
-            return triggerDownload(assetId, assetType, cached.data.location);
-        } else {
-            rightBox.classList.add("highlight-fail");
-            setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
-            assetBox.innerHTML = `<pre>${cached.message}</pre>`;
-            return;
-        }
-    }
 
     try {
         const res = await fetch(backend + "/delivery", {
@@ -337,60 +287,36 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         const text = await res.text();
 
-if (!res.ok) {
-    deliveryCache[assetId] = { success: false, message: text };
-
-    rightBox.classList.add("highlight-fail");
-    setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
-
-    const err = JSON.parse(text).error || "Error";
-
-    rightBox.innerHTML = `
-        <div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:10px;">
-            ${err}
-        </div>
-        <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;">
-            Not Available
-        </button>
-    `;
-
-    return;
-}
+        if (!res.ok) {
+            if (assetRight) {
+                const originalHTML = assetRight.innerHTML;
+                assetRight.innerHTML = `<div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
+                setTimeout(() => assetRight.innerHTML = originalHTML, 3000);
+            }
+            return;
+        }
 
         const data = JSON.parse(text);
-        deliveryCache[assetId] = { success: true, data };
+        const fileRes = await fetch(data.location);
+        const fileBuffer = await fileRes.arrayBuffer();
 
-        rightBox.classList.add("highlight-success");
-        setTimeout(() => rightBox.classList.remove("highlight-success"), 1500);
+        let extension = "";
+        if (assetType === "Animation") extension = ".rbxm";
+        if (assetType === "Audio") extension = ".ogg";
 
-        return triggerDownload(assetId, assetType, data.location);
+        const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
+        const downloadUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = assetId + extension;
+        a.click();
+
+        URL.revokeObjectURL(downloadUrl);
 
     } catch (err) {
-        const msg = err.toString();
-        deliveryCache[assetId] = { success: false, message: msg };
-        rightBox.classList.add("highlight-fail");
-        setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
-        assetBox.innerHTML = `<pre>${msg}</pre>`;
+        assetBox.innerHTML = `<pre>${err}</pre>`;
     }
-}
-
-async function triggerDownload(assetId, assetType, url) {
-    const fileRes = await fetch(url);
-    const fileBuffer = await fileRes.arrayBuffer();
-
-    let extension = "";
-    if (assetType === "Animation") extension = ".rbxm";
-    if (assetType === "Audio") extension = ".ogg";
-
-    const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
-    const downloadUrl = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = downloadUrl;
-    a.download = assetId + extension;
-    a.click();
-
-    URL.revokeObjectURL(downloadUrl);
 }
 
 async function fetchUser(userId) {
