@@ -327,13 +327,23 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         const text = await res.text();
 
-        if (!res.ok) {
-            deliveryCache[assetId] = { success: false, message: text };
-            rightBox.classList.add("highlight-fail");
-            setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
-            assetBox.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
+if (!res.ok) {
+    deliveryCache[assetId] = { success: false, message: text };
+
+    rightBox.classList.add("highlight-fail");
+    setTimeout(() => rightBox.classList.remove("highlight-fail"), 1500);
+
+    rightBox.innerHTML = `
+        <div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:10px;">
+            ${JSON.parse(text).error || "Error"}
+        </div>
+        <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;">
+            Not Available
+        </button>
+    `;
+
+    return;
+}
 
         const data = JSON.parse(text);
         deliveryCache[assetId] = { success: true, data };
