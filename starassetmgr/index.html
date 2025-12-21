@@ -365,7 +365,7 @@ async function fetchGroup(groupId) {
             <div class="glass">Verified Status: ${group.hasVerifiedBadge}</div>
             <div class="glass">Owner's Username: ${group.owner.username}</div>
             <div class="glass">Owner's Display Name: ${group.owner.displayName}</div>
-            <div class="glass">Owner's >Verified Status: ${group.owner.hasVerifiedBadge}</div>
+            <div class="glass">Owner's Verified Status: ${group.owner.hasVerifiedBadge}</div>
         `;
     } catch (err) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
