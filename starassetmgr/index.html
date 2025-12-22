@@ -22,20 +22,26 @@
             --button-active: rgba(255, 255, 255, 0.75);
         }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: var(--bg-url) no-repeat center center fixed;
             background-size: cover;
             color: #000;
-            padding: 40px;
+            padding: 40px 20px;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-        }
-
-        html {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
         }
 
         .logo {
@@ -79,6 +85,7 @@
             color: #000;
             font-size: 15px;
             box-shadow: 0 4px 14px var(--glass-shadow);
+            box-sizing: border-box;
         }
 
         button {
@@ -123,20 +130,27 @@
             -webkit-backdrop-filter: var(--glass-blur);
             box-shadow: 0 8px 28px var(--glass-shadow);
             color: #000;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         .asset-container {
             display: flex;
             gap: 20px;
-            align-items: flex-start;
+            align-items: stretch;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .asset-left {
-            flex: 1;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .asset-right {
-            width: 240px;
+            flex: 1;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--glass-radius);
@@ -145,6 +159,11 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             box-shadow: 0 8px 28px var(--glass-shadow);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 12px;
         }
 
         pre {
@@ -157,6 +176,7 @@
             -webkit-backdrop-filter: var(--glass-blur);
             box-shadow: 0 4px 14px var(--glass-shadow);
             color: #000;
+            box-sizing: border-box;
         }
 
         .footer {
@@ -171,30 +191,41 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             box-shadow: 0 4px 14px var(--glass-shadow);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .asset-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
+<div class="container">
 
-<div class="logo logo-animated"></div>
+    <div class="logo logo-animated"></div>
 
-<label>Asset ID:</label>
-<input id="assetIds" placeholder="Enter the Roblox Asset ID (e.g. 123456789 rbxassetid://123456789)">
+    <label>Asset ID:</label>
+    <input id="assetIds" placeholder="Enter the Roblox Asset ID (e.g. 123456789 or rbxassetid://123456789)">
 
-<label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
-<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
+    <label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
+    <input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
 
-<button onclick="lookup()">Execute</button>
+    <button onclick="lookup()">Execute</button>
 
-<h3>Asset Info & Downloads</h3>
-<div id="assetInfo" class="glass"></div>
+    <h3>Asset Info & Downloads</h3>
+    <div id="assetInfo" class="glass"></div>
 
-<h3>Creator Info</h3>
-<div id="creatorInfo" class="glass"></div>
+    <h3>Creator Info</h3>
+    <div id="creatorInfo" class="glass"></div>
 
-<div class="footer">
-    © 2025 Star Productions - Star Asset Manager | Developed By Olistar (Discord: oli_l_w)
+    <div class="footer">
+        © 2025 Star Productions - Star Asset Manager | Developed By OliStar (Discord: oli_l_w)
+    </div>
+
 </div>
 
 <script>
@@ -205,7 +236,14 @@ function extractId(input) {
     return match ? match[0] : null;
 }
 
+function sanitizeFilename(name) {
+    return name.replace(/[\\\/:*?"<>|]/g, "_");
+}
+
 let executeCooldown = false;
+let currentAssetName = null;
+let currentAssetType = null;
+let autoAttemptFailed = false;
 
 async function fetchThumbnail(assetId) {
     try {
@@ -228,6 +266,7 @@ async function lookup() {
     const creatorBox = document.getElementById("creatorInfo");
 
     executeCooldown = true;
+    autoAttemptFailed = false;
     let remaining = 3;
 
     const interval = setInterval(() => {
@@ -244,13 +283,18 @@ async function lookup() {
 
 async function runLookup() {
     const ids = extractId(document.getElementById("assetIds").value.trim());
-    const placeInput = document.getElementById("placeId").value.trim();
-
     const assetBox = document.getElementById("assetInfo");
     const creatorBox = document.getElementById("creatorInfo");
 
+    currentAssetName = null;
+    currentAssetType = null;
     creatorBox.innerHTML = "";
     assetBox.innerHTML = "Loading...";
+
+    if (!ids) {
+        assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
+        return;
+    }
 
     try {
         const res = await fetch(backend + "/asset", {
@@ -269,7 +313,7 @@ async function runLookup() {
         const data = JSON.parse(text);
 
         if (!data.data || !data.data[0]) {
-            assetBox.innerHTML = `<pre>${text}</pre>`;
+            assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
             return;
         }
 
@@ -279,6 +323,9 @@ async function runLookup() {
         const creatorId = creator.targetId || null;
 
         const typeName = asset.type;
+        const assetName = asset.name || "Asset";
+        currentAssetName = assetName;
+        currentAssetType = typeName;
 
         let imagePanel = `
             <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
@@ -316,7 +363,7 @@ async function runLookup() {
         assetBox.innerHTML = `
             <div class="asset-container">
                 <div class="asset-left">
-                    <div class="glass">Asset Name: ${asset.name}</div>
+                    <div class="glass">Asset Name: ${assetName}</div>
                     <div class="glass">Asset Type: ${typeName}</div>
                     <div class="glass">Asset Moderated: ${asset.isModerated}</div>
                 </div>
@@ -325,6 +372,8 @@ async function runLookup() {
                     ${aaPanel}
                 </div>
             </div>
+        */
+
         `;
 
         if (creatorType === "User") fetchUser(creatorId);
@@ -340,6 +389,7 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     const placeInput = document.getElementById("placeId").value.trim();
     const assetRight = document.getElementById("assetRight");
     const assetBox = document.getElementById("assetInfo");
+    const hasManualPlace = !!placeInput;
 
     try {
         if (assetRight) {
@@ -354,15 +404,31 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
                 assetId,
                 placeId: placeInput || null,
                 creatorId: creatorId || null,
-                creatorType: creatorType || null
+                creatorType: creatorType || null,
+                assetName: currentAssetName || "",
+                assetType: assetType || ""
             })
         });
 
         const text = await res.text();
 
         if (!res.ok) {
+            if (!hasManualPlace) {
+                autoAttemptFailed = true;
+            } else {
+                if (autoAttemptFailed && (assetType === "Animation" || assetType === "Audio")) {
+                    const similar = await trySimilarAsset(assetRight, assetType);
+                    if (similar) return;
+                }
+            }
+
             if (assetRight) {
-                assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
+                let errMsg = "Failed to download asset.";
+                try {
+                    const parsed = JSON.parse(text);
+                    if (parsed.error) errMsg = parsed.error;
+                } catch {}
+                assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${errMsg}</div>`;
                 setTimeout(() => {
                     if (assetRight.dataset.original) {
                         assetRight.innerHTML = assetRight.dataset.original;
@@ -381,12 +447,13 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         if (assetType === "Animation") extension = ".rbxm";
         if (assetType === "Audio") extension = ".ogg";
 
+        const safeName = sanitizeFilename(currentAssetName || assetId.toString());
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
         const downloadUrl = URL.createObjectURL(blob);
 
         const a = document.createElement("a");
         a.href = downloadUrl;
-        a.download = assetId + extension;
+        a.download = safeName + extension;
         a.click();
 
         URL.revokeObjectURL(downloadUrl);
@@ -402,6 +469,67 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
             delete assetRight.dataset.original;
         }
         assetBox.innerHTML = `<pre>${err}</pre>`;
+    }
+}
+
+async function trySimilarAsset(assetRight, assetType) {
+    try {
+        if (!currentAssetName || !assetType) return false;
+
+        if (assetRight) {
+            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">As a last resort we detected a similar named asset in our database. This could be what you're looking for...</div>`;
+        }
+
+        const res = await fetch(backend + "/get-similar-assets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: currentAssetName,
+                type: assetType
+            })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+            if (assetRight && assetRight.dataset.original) {
+                assetRight.innerHTML = assetRight.dataset.original;
+                delete assetRight.dataset.original;
+            }
+            return false;
+        }
+
+        const data = JSON.parse(text);
+        const fileRes = await fetch(data.location);
+        const fileBuffer = await fileRes.arrayBuffer();
+
+        let extension = "";
+        if (data.type === "Animation") extension = ".rbxm";
+        if (data.type === "Audio") extension = ".ogg";
+
+        const safeName = sanitizeFilename(data.name || currentAssetName || data.assetId.toString());
+        const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
+        const downloadUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = safeName + extension;
+        a.click();
+
+        URL.revokeObjectURL(downloadUrl);
+
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+
+        return true;
+    } catch {
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+        return false;
     }
 }
 
