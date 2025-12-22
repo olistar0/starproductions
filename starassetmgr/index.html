@@ -372,7 +372,6 @@ async function runLookup() {
                     ${aaPanel}
                 </div>
             </div>
-        */
 
         `;
 
@@ -394,7 +393,7 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     try {
         if (assetRight) {
             assetRight.dataset.original = assetRight.innerHTML;
-            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download...</div>`;
+            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download... (Its searching)</div>`;
         }
 
         const res = await fetch(backend + "/delivery", {
