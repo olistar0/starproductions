@@ -4,97 +4,129 @@
     <title>Star Asset Manager</title>
     <link rel="shortcut icon" href="https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/assets/tabicon.png">
     <meta name="title" content="Star Productions - Star Asset Manager">
-    <meta name="theme-color" content="#1d1d1d">
+    <meta name="theme-color" content="#ffffff">
     <meta name="description" content="View the details of Roblox Assets and download them!" />
+
     <style>
         :root {
             --bg-url: url('https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/assets/bg.png');
             --logo-url: url('https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/starassetmgr/assets/hover.png');
-            --logo-height: 200px;
+
+            --glass-bg: rgba(255, 255, 255, 0.18);
+            --glass-border: rgba(255, 255, 255, 0.35);
+            --glass-shadow: rgba(0, 0, 0, 0.25);
+            --glass-blur: blur(22px);
+            --glass-radius: 18px;
+
+            --input-bg: rgba(255, 255, 255, 0.22);
+            --input-border: rgba(255, 255, 255, 0.45);
+
+            --button-bg: rgba(255, 255, 255, 0.35);
+            --button-hover: rgba(255, 255, 255, 0.55);
+            --button-active: rgba(255, 255, 255, 0.75);
         }
 
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: var(--bg-url) no-repeat center center fixed;
             background-size: cover;
-            color: #eee;
-            padding: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .glass {
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(12px);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: rgba(0,0,0,0.4);
-            color: #eee;
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            border-radius: 8px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background: orange;
-            border: none;
             color: #000;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 8px;
-            transition: background 0.2s ease;
-        }
-
-        button:hover {
-            background: #cc8400;
-        }
-
-        button:active {
-            background: #b36f00;
-        }
-
-        pre {
-            background: rgba(0,0,0,0.4);
-            padding: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            white-space: pre-wrap;
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         html {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .logo {
-            height: var(--logo-height);
+            height: 200px;
             background-image: var(--logo-url);
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             width: 100%;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 12px rgba(255,255,255,0.6));
         }
 
         .logo-animated {
-            animation-name: rgbhover;
-            animation-duration: 3s;
-            animation-iteration-count: infinite;
-            animation-timing-function: ease-in-out;
+            animation: floaty 4s ease-in-out infinite;
         }
 
-        @keyframes rgbhover {
-            from { transform: translate(0, 0px); }
-            65% { transform: translate(0, 15px); }
-            to { transform: translate(0, -0px); }
+        @keyframes floaty {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(14px); }
+            100% { transform: translateY(0px); }
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 12px;
+            display: block;
+            color: #fff;
+            text-shadow: 0 0 6px rgba(255,255,255,0.6);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--glass-radius);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            color: #000;
+            font-size: 15px;
+            box-shadow: 0 4px 14px var(--glass-shadow);
+        }
+
+        button {
+            padding: 12px 20px;
+            width: 100%;
+            background: var(--button-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            color: #000;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 4px 18px var(--glass-shadow);
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background: var(--button-active);
+            transform: translateY(0px);
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: #fff;
+            text-shadow: 0 0 6px rgba(255,255,255,0.6);
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
+            padding: 18px;
+            margin-top: 12px;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 8px 28px var(--glass-shadow);
+            color: #000;
         }
 
         .asset-container {
@@ -108,16 +140,31 @@
         }
 
         .asset-right {
-            width: 220px;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(12px);
-            padding: 15px;
-            border-radius: 12px;
+            width: 240px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
+            padding: 18px;
             text-align: center;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 8px 28px var(--glass-shadow);
+        }
+
+        pre {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
+            padding: 12px;
+            white-space: pre-wrap;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 4px 14px var(--glass-shadow);
+            color: #000;
         }
     </style>
 </head>
+
 <body>
 
 <div class="logo logo-animated"></div>
@@ -126,7 +173,7 @@
 <input id="assetIds" placeholder="Enter the Roblox Asset ID (e.g. 123456789 rbxassetid://123456789)">
 
 <label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
-<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails. (If it fails with an id inside try without because it might find it.)">
+<input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
 
 <button onclick="lookup()">Execute</button>
 
@@ -139,7 +186,7 @@
 <script>
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
 
-    function extractId(input) {
+function extractId(input) {
     const match = input.match(/\d+/);
     return match ? match[0] : null;
 }
@@ -221,7 +268,7 @@ async function runLookup() {
 
         let imagePanel = `
             <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-            <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;">Not Available for this asset type.</button>
+            <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;">Not Available</button>
         `;
 
         if (typeName === "Image" || typeName === "Decal") {
@@ -229,7 +276,7 @@ async function runLookup() {
             if (thumbUrl) {
                 imagePanel = `
                     <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                    <button style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;" onclick="window.open('${thumbUrl}', '_blank')">Download</button>
+                    <button style="background:#ffffffaa;color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;" onclick="window.open('${thumbUrl}', '_blank')">Download</button>
                 `;
             }
         }
@@ -237,11 +284,11 @@ async function runLookup() {
         let aaButton;
         if (typeName === "Animation" || typeName === "Audio") {
             aaButton = `
-                <button style="background:#4a8;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
+                <button style="background:#ffffffaa;color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
             `;
         } else {
             aaButton = `
-                <button disabled style="background:#7a1f1f;color:#2a0000;padding:8px 12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px;">Not Available for this asset type.</button>
+                <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;">Not Available</button>
             `;
         }
 
@@ -297,7 +344,7 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         if (!res.ok) {
             if (assetRight) {
                 const originalHTML = assetRight.innerHTML;
-                assetRight.innerHTML = `<div style="background:#7a1f1f;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
+                assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
                 setTimeout(() => assetRight.innerHTML = originalHTML, 3000);
             }
             return;
