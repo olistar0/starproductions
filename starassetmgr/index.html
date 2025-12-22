@@ -6,21 +6,17 @@
     <meta name="title" content="Star Productions - Star Asset Manager">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="View the details of Roblox Assets and download them!" />
-
     <style>
         :root {
             --bg-url: url('https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/assets/bg.png');
             --logo-url: url('https://raw.githubusercontent.com/olistar0/starproductions/refs/heads/main/starassetmgr/assets/hover.png');
-
             --glass-bg: rgba(255, 255, 255, 0.18);
             --glass-border: rgba(255, 255, 255, 0.35);
             --glass-shadow: rgba(0, 0, 0, 0.25);
             --glass-blur: blur(22px);
             --glass-radius: 18px;
-
             --input-bg: rgba(255, 255, 255, 0.22);
             --input-border: rgba(255, 255, 255, 0.45);
-
             --button-bg: rgba(255, 255, 255, 0.35);
             --button-hover: rgba(255, 255, 255, 0.55);
             --button-active: rgba(255, 255, 255, 0.75);
@@ -162,6 +158,20 @@
             box-shadow: 0 4px 14px var(--glass-shadow);
             color: #000;
         }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #000;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
+            padding: 10px 16px;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 4px 14px var(--glass-shadow);
+        }
     </style>
 </head>
 
@@ -182,6 +192,10 @@
 
 <h3>Creator Info</h3>
 <div id="creatorInfo" class="glass"></div>
+
+<div class="footer">
+    © 2025 Star Productions - Star Asset Manager | Developed By Olistar (Discord: oli_l_w)
+</div>
 
 <script>
 const backend = "https://apistarproductions.jollyoliver734.workers.dev";
@@ -328,6 +342,11 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     const assetBox = document.getElementById("assetInfo");
 
     try {
+        if (assetRight) {
+            assetRight.dataset.original = assetRight.innerHTML;
+            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download...</div>`;
+        }
+
         const res = await fetch(backend + "/delivery", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -343,9 +362,13 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         if (!res.ok) {
             if (assetRight) {
-                const originalHTML = assetRight.innerHTML;
                 assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${JSON.parse(text).error}</div>`;
-                setTimeout(() => assetRight.innerHTML = originalHTML, 3000);
+                setTimeout(() => {
+                    if (assetRight.dataset.original) {
+                        assetRight.innerHTML = assetRight.dataset.original;
+                        delete assetRight.dataset.original;
+                    }
+                }, 3000);
             }
             return;
         }
@@ -368,7 +391,16 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
         URL.revokeObjectURL(downloadUrl);
 
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+
     } catch (err) {
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
