@@ -166,6 +166,33 @@
             gap: 12px;
         }
 
+        .similar-list {
+            margin-top: 10px;
+            text-align: left;
+            max-height: 180px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .similar-item-button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.08);
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .similar-item-button:hover {
+            background: rgba(255,255,255,0.9);
+        }
+
         pre {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -193,6 +220,18 @@
             box-shadow: 0 4px 14px var(--glass-shadow);
             width: 100%;
             box-sizing: border-box;
+        }
+
+        .similar-button {
+            background: linear-gradient(90deg, #3bbf7c, #f04b4b);
+            color: #000;
+        }
+
+        .similar-warning {
+            font-size: 11px;
+            color: #200;
+            opacity: 0.9;
+            margin-top: 4px;
         }
 
         @media (max-width: 768px) {
@@ -243,7 +282,6 @@ function sanitizeFilename(name) {
 let executeCooldown = false;
 let currentAssetName = null;
 let currentAssetType = null;
-let autoAttemptFailed = false;
 
 async function fetchThumbnail(assetId) {
     try {
@@ -266,7 +304,6 @@ async function lookup() {
     const creatorBox = document.getElementById("creatorInfo");
 
     executeCooldown = true;
-    autoAttemptFailed = false;
     let remaining = 3;
 
     const interval = setInterval(() => {
@@ -342,13 +379,16 @@ async function runLookup() {
             }
         }
 
-        let aaButton;
+        let aaButtons;
         if (typeName === "Animation" || typeName === "Audio") {
-            aaButton = `
+            aaButtons = `
                 <button style="background:#ffffffaa;color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
+                <button class="similar-button" style="padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="getSimilarAssetFallback('${typeName}')">Get Similar Asset</button>
+                <div class="similar-warning">Only use this as a last resort if it can't find your asset. It's possible to give you the wrong asset.</div>
+                <div id="similarList" class="similar-list" style="display:none;"></div>
             `;
         } else {
-            aaButton = `
+            aaButtons = `
                 <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;">Not Available</button>
             `;
         }
@@ -356,7 +396,7 @@ async function runLookup() {
         const aaPanel = `
             <div id="aaPanel" style="margin-top:15px;">
                 <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
-                ${aaButton}
+                ${aaButtons}
             </div>
         `;
 
@@ -372,7 +412,6 @@ async function runLookup() {
                     ${aaPanel}
                 </div>
             </div>
-
         `;
 
         if (creatorType === "User") fetchUser(creatorId);
@@ -388,12 +427,11 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     const placeInput = document.getElementById("placeId").value.trim();
     const assetRight = document.getElementById("assetRight");
     const assetBox = document.getElementById("assetInfo");
-    const hasManualPlace = !!placeInput;
 
     try {
         if (assetRight) {
             assetRight.dataset.original = assetRight.innerHTML;
-            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download... (Its searching)</div>`;
+            assetRight.innerHTML = `<div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download... (It's searching)</div>`;
         }
 
         const res = await fetch(backend + "/delivery", {
@@ -412,15 +450,6 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         const text = await res.text();
 
         if (!res.ok) {
-            if (!hasManualPlace) {
-                autoAttemptFailed = true;
-            } else {
-                if (autoAttemptFailed && (assetType === "Animation" || assetType === "Audio")) {
-                    const similar = await trySimilarAsset(assetRight, assetType);
-                    if (similar) return;
-                }
-            }
-
             if (assetRight) {
                 let errMsg = "Failed to download asset.";
                 try {
@@ -471,12 +500,21 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     }
 }
 
-async function trySimilarAsset(assetRight, assetType) {
-    try {
-        if (!currentAssetName || !assetType) return false;
+async function getSimilarAssetFallback(assetType) {
+    const assetRight = document.getElementById("assetRight");
+    const similarList = document.getElementById("similarList");
 
+    if (!currentAssetName || !assetType) return;
+
+    try {
         if (assetRight) {
-            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">As a last resort we detected a similar named asset in our database. This could be what you're looking for...</div>`;
+            assetRight.dataset.original = assetRight.dataset.original || assetRight.innerHTML;
+            assetRight.innerHTML = `
+                <div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">
+                    As a last resort we detected similar assets in our database. These may not be the exact asset you want...
+                </div>
+                <div id="similarList" class="similar-list"></div>
+            `;
         }
 
         const res = await fetch(backend + "/get-similar-assets", {
@@ -495,18 +533,74 @@ async function trySimilarAsset(assetRight, assetType) {
                 assetRight.innerHTML = assetRight.dataset.original;
                 delete assetRight.dataset.original;
             }
-            return false;
+            return;
         }
 
         const data = JSON.parse(text);
+        const assets = data.assets || [];
+        const targetList = document.getElementById("similarList");
+
+        if (!assets.length) {
+            if (targetList) {
+                targetList.style.display = "block";
+                targetList.innerHTML = `<div>No similar assets available.</div>`;
+            }
+            return;
+        }
+
+        if (targetList) {
+            targetList.style.display = "block";
+            targetList.innerHTML = `<div>We found ${assets.length} similar asset(s). We will try them in order, or you can click one manually:</div>`;
+            assets.forEach((a, index) => {
+                const btn = document.createElement("button");
+                btn.className = "similar-item-button";
+                btn.textContent = `#${index + 1} - Asset ID: ${a.assetId}, Place ID: ${a.placeId}`;
+                btn.onclick = () => downloadSpecificSimilar(a.assetId, a.placeId, assetType);
+                targetList.appendChild(btn);
+            });
+        }
+
+        for (const a of assets) {
+            const ok = await downloadSpecificSimilar(a.assetId, a.placeId, assetType, true);
+            if (ok) return;
+        }
+
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+    } catch {
+        if (assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+    }
+}
+
+async function downloadSpecificSimilar(assetId, placeId, assetType, silent = false) {
+    try {
+        const res = await fetch(`https://assetdelivery.roblox.com/v1/assetId/${assetId}`, {
+            headers: {
+                "User-Agent": "Roblox/WinInet",
+                Accept: "application/json",
+                "Roblox-Place-Id": placeId.toString()
+            }
+        });
+
+        const text = await res.text();
+        if (!res.ok) return false;
+
+        const data = JSON.parse(text);
+        if (!data.location) return false;
+
         const fileRes = await fetch(data.location);
         const fileBuffer = await fileRes.arrayBuffer();
 
         let extension = "";
-        if (data.type === "Animation") extension = ".rbxm";
-        if (data.type === "Audio") extension = ".ogg";
+        if (assetType === "Animation") extension = ".rbxm";
+        if (assetType === "Audio") extension = ".ogg";
 
-        const safeName = sanitizeFilename(data.name || currentAssetName || data.assetId.toString());
+        const safeName = sanitizeFilename(currentAssetName || assetId.toString());
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
         const downloadUrl = URL.createObjectURL(blob);
 
@@ -517,17 +611,8 @@ async function trySimilarAsset(assetRight, assetType) {
 
         URL.revokeObjectURL(downloadUrl);
 
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
-
         return true;
     } catch {
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
         return false;
     }
 }
