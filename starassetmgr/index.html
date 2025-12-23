@@ -65,7 +65,6 @@
             100% { transform: translateY(0px); }
         }
 
-        /* pulse glow for EXECUTE button */
         @keyframes pulseGlow {
             0% {
                 box-shadow: 0 4px 18px rgba(255, 184, 77, 0.4);
@@ -78,6 +77,18 @@
             100% {
                 box-shadow: 0 4px 18px rgba(255, 184, 77, 0.4);
                 transform: translateY(0);
+            }
+        }
+
+        @keyframes errorShine {
+            0% {
+                background-position: -200px 0;
+            }
+            50% {
+                background-position: 200px 0;
+            }
+            100% {
+                background-position: -200px 0;
             }
         }
 
@@ -130,7 +141,6 @@
             transform: translateY(0px);
         }
 
-        /* BIG EXECUTE BUTTON */
         .execute-btn {
             background: linear-gradient(90deg, #ffe08a, #ff9f3f);
             color: #402200;
@@ -265,6 +275,51 @@
             background: rgba(255,255,255,0.9);
         }
 
+        .error-box {
+            background: linear-gradient(to bottom, rgba(255,120,120,0.85), rgba(150,0,0,0.95));
+            border-radius: 14px;
+            padding: 14px;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 6px 22px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.5);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .error-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -200px;
+            width: 200px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.2), rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+            opacity: 0.7;
+            animation: errorShine 3.2s linear infinite;
+        }
+
+        .error-ok-button {
+            margin-top: 10px;
+            background: linear-gradient(90deg, #ffb347, #ff5722);
+            color: #3a1a00;
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 18px rgba(255,120,60,0.7);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.5);
+            width: 100%;
+        }
+
+        .error-ok-button:hover {
+            background: linear-gradient(90deg, #ffc067, #ff6f3a);
+        }
+
         @media (max-width: 768px) {
             .asset-container {
                 flex-direction: column;
@@ -397,7 +452,6 @@ async function runLookup() {
         currentAssetName = assetName;
         currentAssetType = typeName;
 
-        // IMAGE/DECAL PANEL
         let imagePanel = `
             <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
             <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;">Not Available</button>
@@ -413,7 +467,6 @@ async function runLookup() {
             }
         }
 
-        // ANIMATION/AUDIO PANEL + GET SIMILAR
         let aaPanel;
         if (typeName === "Animation" || typeName === "Audio") {
             aaPanel = `
@@ -466,6 +519,27 @@ async function runLookup() {
     }
 }
 
+function showAssetRightError(message) {
+    const assetRight = document.getElementById("assetRight");
+    if (!assetRight) return;
+    if (!assetRight.dataset.original) {
+        assetRight.dataset.original = assetRight.innerHTML;
+    }
+    assetRight.innerHTML = `
+        <div class="error-box">${message}</div>
+        <button class="error-ok-button" onclick="restoreAssetRight()">OK</button>
+    `;
+}
+
+function restoreAssetRight() {
+    const assetRight = document.getElementById("assetRight");
+    if (!assetRight || !assetRight.dataset.original) return;
+    assetRight.innerHTML = assetRight.dataset.original;
+    delete assetRight.dataset.original;
+    const listBox = document.getElementById("similarList");
+    if (listBox) listBox.style.display = "none";
+}
+
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     assetId = extractId(assetId);
     const placeInput = document.getElementById("placeId").value.trim();
@@ -475,7 +549,9 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
 
     try {
         if (assetRight) {
-            assetRight.dataset.original = assetRight.innerHTML;
+            if (!assetRight.dataset.original) {
+                assetRight.dataset.original = assetRight.innerHTML;
+            }
             assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download... (Its searching)</div>`;
         }
 
@@ -504,20 +580,12 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
                 }
             }
 
-            if (assetRight) {
-                let errMsg = "Failed to download asset.";
-                try {
-                    const parsed = JSON.parse(text);
-                    if (parsed.error) errMsg = parsed.error;
-                } catch {}
-                assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${errMsg}</div>`;
-                setTimeout(() => {
-                    if (assetRight.dataset.original) {
-                        assetRight.innerHTML = assetRight.dataset.original;
-                        delete assetRight.dataset.original;
-                    }
-                }, 3000);
-            }
+            let errMsg = "Failed to download asset.";
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed.error) errMsg = parsed.error;
+            } catch {}
+            showAssetRightError(errMsg);
             return;
         }
 
@@ -546,20 +614,19 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         }
 
     } catch (err) {
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
+        showAssetRightError("An error occurred while downloading the asset.");
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
 
-// auto fallback used from downloadAsset when both attempts fail
 async function trySimilarAsset(assetRight, assetType) {
     try {
         if (!currentAssetName || !assetType) return false;
 
         if (assetRight) {
+            if (!assetRight.dataset.original) {
+                assetRight.dataset.original = assetRight.innerHTML;
+            }
             assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">As a last resort we detected a similar named asset in our database. This could be what you're looking for...</div>`;
         }
 
@@ -610,7 +677,6 @@ async function trySimilarAsset(assetRight, assetType) {
     }
 }
 
-// manual button: show list and let user pick
 async function getSimilarAssetFallback(assetType) {
     const listBox = document.getElementById("similarList");
     if (!currentAssetName || !assetType || !listBox) return;
@@ -657,14 +723,17 @@ async function getSimilarAssetFallback(assetType) {
     }
 }
 
-// used by both auto fallback and manual selection
 async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
     const assetRight = document.getElementById("assetRight");
 
     try {
-        if (!silent && assetRight) {
-            assetRight.dataset.original = assetRight.innerHTML;
-            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Downloading similar asset...</div>`;
+        if (assetRight) {
+            if (!assetRight.dataset.original) {
+                assetRight.dataset.original = assetRight.innerHTML;
+            }
+            if (!silent) {
+                assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Downloading similar asset...</div>`;
+            }
         }
 
         const res = await fetch(backend + "/delivery", {
@@ -682,18 +751,21 @@ async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
 
         const text = await res.text();
         if (!res.ok) {
-            if (!silent && assetRight && assetRight.dataset.original) {
-                assetRight.innerHTML = assetRight.dataset.original;
-                delete assetRight.dataset.original;
+            if (!silent) {
+                let errMsg = "Failed to download similar asset.";
+                try {
+                    const parsed = JSON.parse(text);
+                    if (parsed.error) errMsg = parsed.error;
+                } catch {}
+                showAssetRightError(errMsg);
             }
             return false;
         }
 
         const data = JSON.parse(text);
         if (!data.location) {
-            if (!silent && assetRight && assetRight.dataset.original) {
-                assetRight.innerHTML = assetRight.dataset.original;
-                delete assetRight.dataset.original;
+            if (!silent) {
+                showAssetRightError("AssetDelivery did not return a location for this Place ID.");
             }
             return false;
         }
@@ -723,9 +795,8 @@ async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
 
         return true;
     } catch {
-        if (!silent && assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
+        if (!silent) {
+            showAssetRightError("An error occurred while downloading the similar asset.");
         }
         return false;
     }
