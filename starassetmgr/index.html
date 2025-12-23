@@ -522,12 +522,15 @@ async function runLookup() {
 function showAssetRightError(message) {
     const assetRight = document.getElementById("assetRight");
     if (!assetRight) return;
+
     if (!assetRight.dataset.original) {
         assetRight.dataset.original = assetRight.innerHTML;
     }
-    assetRight.innerHTML = `
-        <div class="error-box">
-            ${message}
+
+    let extraNote = "";
+
+    if (message.includes("Could not resolve a valid Place ID automatically. Try entering a Place ID manually. (If you already have tried with the id consider using the Get Similar Assets.)")) {
+        extraNote = `
             <div style="
                 margin-top:10px;
                 background:rgba(255,255,255,0.15);
@@ -542,6 +545,13 @@ function showAssetRightError(message) {
             ">
                 Note. You only need to press download after adding the place ID. No need to press Execute
             </div>
+        `;
+    }
+
+    assetRight.innerHTML = `
+        <div class="error-box">
+            ${message}
+            ${extraNote}
         </div>
         <button class="error-ok-button" onclick="restoreAssetRight()">OK</button>
     `;
