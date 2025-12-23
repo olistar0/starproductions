@@ -735,12 +735,12 @@ async function getSimilarAssetFallback(assetType) {
             return;
         }
 
-        listBox.innerHTML = `<div>We found ${assets.length} similar asset(s). Click one to try downloading it:</div>`;
+        listBox.innerHTML = `<div>We found ${assets.length} similar asset(s). Click one to download it:</div>`;
 
         assets.forEach((entry, index) => {
             const btn = document.createElement("button");
             btn.className = "similar-item-button";
-            btn.textContent = `#${index + 1} - Asset ID: ${entry.assetId}, Place ID: ${entry.placeId}`;
+            btn.textContent = `#${index + 1} - Asset ID: ${entry.assetId}`;
             btn.onclick = () => downloadSpecificSimilar(entry.assetId, entry.placeId, assetType, false);
             listBox.appendChild(btn);
         });
