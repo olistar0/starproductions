@@ -17,9 +17,9 @@
             --glass-radius: 18px;
             --input-bg: rgba(255, 255, 255, 0.22);
             --input-border: rgba(255, 255, 255, 0.45);
-            --button-bg: rgba(180, 255, 180, 0.55); /* more green */
-            --button-hover: rgba(200, 255, 200, 0.75);
-            --button-active: rgba(160, 235, 160, 0.95);
+            --button-bg: rgba(255, 255, 255, 0.35);
+            --button-hover: rgba(255, 255, 255, 0.55);
+            --button-active: rgba(255, 255, 255, 0.75);
         }
 
         html, body {
@@ -63,6 +63,22 @@
             0% { transform: translateY(0px); }
             50% { transform: translateY(14px); }
             100% { transform: translateY(0px); }
+        }
+
+        /* pulse glow for EXECUTE button */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 4px 18px rgba(255, 184, 77, 0.4);
+                transform: translateY(0);
+            }
+            50% {
+                box-shadow: 0 8px 26px rgba(255, 184, 77, 0.85);
+                transform: translateY(-2px);
+            }
+            100% {
+                box-shadow: 0 4px 18px rgba(255, 184, 77, 0.4);
+                transform: translateY(0);
+            }
         }
 
         label {
@@ -112,6 +128,18 @@
         button:active {
             background: var(--button-active);
             transform: translateY(0px);
+        }
+
+        /* BIG EXECUTE BUTTON */
+        .execute-btn {
+            background: linear-gradient(90deg, #ffe08a, #ff9f3f);
+            color: #402200;
+            box-shadow: 0 4px 18px rgba(255, 184, 77, 0.7);
+            animation: pulseGlow 2.6s ease-in-out infinite;
+        }
+
+        .execute-btn:hover {
+            background: linear-gradient(90deg, #ffe9a8, #ffb25f);
         }
 
         h3 {
@@ -256,7 +284,7 @@
     <label>Place ID (ONLY FOR DOWNLOADING ANIMATION/AUDIO):</label>
     <input id="placeId" placeholder="Sometimes not needed but helps for Animation/Audio downloads if it fails.">
 
-    <button onclick="lookup()">Execute</button>
+    <button class="execute-btn" onclick="lookup()">Execute</button>
 
     <h3>Asset Info & Downloads</h3>
     <div id="assetInfo" class="glass"></div>
@@ -369,6 +397,7 @@ async function runLookup() {
         currentAssetName = assetName;
         currentAssetType = typeName;
 
+        // IMAGE/DECAL PANEL
         let imagePanel = `
             <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
             <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;">Not Available</button>
@@ -384,6 +413,7 @@ async function runLookup() {
             }
         }
 
+        // ANIMATION/AUDIO PANEL + GET SIMILAR
         let aaPanel;
         if (typeName === "Animation" || typeName === "Audio") {
             aaPanel = `
@@ -562,7 +592,6 @@ async function trySimilarAsset(assetRight, assetType) {
             return false;
         }
 
-        // auto-fallback: try the first one
         const first = assets[0];
         const ok = await downloadSpecificSimilar(first.assetId, first.placeId, assetType, true);
 
@@ -630,20 +659,44 @@ async function getSimilarAssetFallback(assetType) {
 
 // used by both auto fallback and manual selection
 async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
+    const assetRight = document.getElementById("assetRight");
+
     try {
-        const res = await fetch(`https://assetdelivery.roblox.com/v1/assetId/${assetId}`, {
-            headers: {
-                "User-Agent": "Roblox/WinInet",
-                Accept: "application/json",
-                "Roblox-Place-Id": placeId.toString()
-            }
+        if (!silent && assetRight) {
+            assetRight.dataset.original = assetRight.innerHTML;
+            assetRight.innerHTML = `<div style="background:#fff3cd;color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Downloading similar asset...</div>`;
+        }
+
+        const res = await fetch(backend + "/delivery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                assetId: assetId,
+                placeId: placeId,
+                creatorId: null,
+                creatorType: null,
+                assetName: currentAssetName || "",
+                assetType: assetType || ""
+            })
         });
 
         const text = await res.text();
-        if (!res.ok) return false;
+        if (!res.ok) {
+            if (!silent && assetRight && assetRight.dataset.original) {
+                assetRight.innerHTML = assetRight.dataset.original;
+                delete assetRight.dataset.original;
+            }
+            return false;
+        }
 
         const data = JSON.parse(text);
-        if (!data.location) return false;
+        if (!data.location) {
+            if (!silent && assetRight && assetRight.dataset.original) {
+                assetRight.innerHTML = assetRight.dataset.original;
+                delete assetRight.dataset.original;
+            }
+            return false;
+        }
 
         const fileRes = await fetch(data.location);
         const fileBuffer = await fileRes.arrayBuffer();
@@ -663,8 +716,17 @@ async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
 
         URL.revokeObjectURL(downloadUrl);
 
+        if (!silent && assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
+
         return true;
     } catch {
+        if (!silent && assetRight && assetRight.dataset.original) {
+            assetRight.innerHTML = assetRight.dataset.original;
+            delete assetRight.dataset.original;
+        }
         return false;
     }
 }
