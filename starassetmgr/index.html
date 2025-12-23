@@ -114,10 +114,44 @@
             transform: translateY(0px);
         }
 
-        h3 {
-            margin-top: 30px;
-            color: #fff;
-            text-shadow: 0 0 6px rgba(255,255,255,0.6);
+        .similar-button {
+            background: linear-gradient(90deg, #3bbf7c, #f04b4b);
+            color: #000;
+        }
+
+        .similar-warning {
+            font-size: 11px;
+            color: #200;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .similar-list {
+            margin-top: 10px;
+            text-align: left;
+            max-height: 180px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .similar-item-button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.08);
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .similar-item-button:hover {
+            background: rgba(255,255,255,0.9);
         }
 
         .glass {
@@ -166,74 +200,6 @@
             gap: 12px;
         }
 
-        .similar-list {
-            margin-top: 10px;
-            text-align: left;
-            max-height: 180px;
-            overflow-y: auto;
-            background: rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 8px;
-            font-size: 13px;
-        }
-
-        .similar-item-button {
-            width: 100%;
-            margin-top: 6px;
-            padding: 6px 10px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.7);
-            border: 1px solid rgba(0,0,0,0.08);
-            cursor: pointer;
-            font-size: 13px;
-            text-align: left;
-        }
-
-        .similar-item-button:hover {
-            background: rgba(255,255,255,0.9);
-        }
-
-        pre {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--glass-radius);
-            padding: 12px;
-            white-space: pre-wrap;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: 0 4px 14px var(--glass-shadow);
-            color: #000;
-            box-sizing: border-box;
-        }
-
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 13px;
-            color: #000;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--glass-radius);
-            padding: 10px 16px;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: 0 4px 14px var(--glass-shadow);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .similar-button {
-            background: linear-gradient(90deg, #3bbf7c, #f04b4b);
-            color: #000;
-        }
-
-        .similar-warning {
-            font-size: 11px;
-            color: #200;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
         @media (max-width: 768px) {
             .asset-container {
                 flex-direction: column;
@@ -279,57 +245,19 @@ function sanitizeFilename(name) {
     return name.replace(/[\\\/:*?"<>|]/g, "_");
 }
 
-let executeCooldown = false;
 let currentAssetName = null;
 let currentAssetType = null;
 
-async function fetchThumbnail(assetId) {
-    try {
-        assetId = extractId(assetId);
-        const res = await fetch(`${backend}/thumbnail/${assetId}`);
-        const text = await res.text();
-        if (!res.ok) return null;
-        const data = JSON.parse(text);
-        if (!data.data || !data.data[0] || !data.data[0].imageUrl) return null;
-        return data.data[0].imageUrl;
-    } catch {
-        return null;
-    }
-}
-
 async function lookup() {
-    if (executeCooldown) return;
-
     const assetBox = document.getElementById("assetInfo");
     const creatorBox = document.getElementById("creatorInfo");
 
-    executeCooldown = true;
-    let remaining = 3;
-
-    const interval = setInterval(() => {
-        assetBox.innerHTML = `Loading... (${remaining})`;
-        creatorBox.innerHTML = "";
-        remaining--;
-        if (remaining < 0) {
-            clearInterval(interval);
-            executeCooldown = false;
-            runLookup();
-        }
-    }, 1000);
-}
-
-async function runLookup() {
-    const ids = extractId(document.getElementById("assetIds").value.trim());
-    const assetBox = document.getElementById("assetInfo");
-    const creatorBox = document.getElementById("creatorInfo");
-
-    currentAssetName = null;
-    currentAssetType = null;
-    creatorBox.innerHTML = "";
     assetBox.innerHTML = "Loading...";
+    creatorBox.innerHTML = "";
 
+    const ids = extractId(document.getElementById("assetIds").value.trim());
     if (!ids) {
-        assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
+        assetBox.innerHTML = `<div class="glass">Not a valid asset ID.</div>`;
         return;
     }
 
@@ -341,75 +269,46 @@ async function runLookup() {
         });
 
         const text = await res.text();
-
         if (!res.ok) {
             assetBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
 
         const data = JSON.parse(text);
-
-        if (!data.data || !data.data[0]) {
-            assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
+        const asset = data.data?.[0];
+        if (!asset) {
+            assetBox.innerHTML = `<div class="glass">Invalid asset ID.</div>`;
             return;
         }
 
-        const asset = data.data[0];
+        currentAssetName = asset.name || "Asset";
+        currentAssetType = asset.type;
+
         const creator = asset.creator || {};
-        const creatorType = creator.type || null;
-        const creatorId = creator.targetId || null;
+        const creatorType = creator.type;
+        const creatorId = creator.targetId;
 
-        const typeName = asset.type;
-        const assetName = asset.name || "Asset";
-        currentAssetName = assetName;
-        currentAssetType = typeName;
-
-        let imagePanel = `
-            <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-            <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;">Not Available</button>
-        `;
-
-        if (typeName === "Image" || typeName === "Decal") {
-            const thumbUrl = await fetchThumbnail(ids);
-            if (thumbUrl) {
-                imagePanel = `
-                    <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                    <button style="background:#ffffffaa;color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;" onclick="window.open('${thumbUrl}', '_blank')">Download</button>
-                `;
-            }
-        }
-
-        let aaButtons;
-        if (typeName === "Animation" || typeName === "Audio") {
+        let aaButtons = "";
+        if (asset.type === "Animation" || asset.type === "Audio") {
             aaButtons = `
-                <button style="background:#ffffffaa;color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
-                <button class="similar-button" style="padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="getSimilarAssetFallback('${typeName}')">Get Similar Asset</button>
+                <button onclick="downloadAsset('${ids}', '${asset.type}', '${creatorType}', '${creatorId}')">Download</button>
+                <button class="similar-button" onclick="getSimilarAssetFallback('${asset.type}')">Get Similar Asset</button>
                 <div class="similar-warning">Only use this as a last resort if it can't find your asset. It's possible to give you the wrong asset.</div>
-                <div id="similarList" class="similar-list" style="display:none;"></div>
+                <div id="similarList" class="similar-list"></div>
             `;
         } else {
-            aaButtons = `
-                <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;">Not Available</button>
-            `;
+            aaButtons = `<button disabled>Not Available</button>`;
         }
-
-        const aaPanel = `
-            <div id="aaPanel" style="margin-top:15px;">
-                <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
-                ${aaButtons}
-            </div>
-        `;
 
         assetBox.innerHTML = `
             <div class="asset-container">
                 <div class="asset-left">
-                    <div class="glass">Asset Name: ${assetName}</div>
-                    <div class="glass">Asset Type: ${typeName}</div>
+                    <div class="glass">Asset Name: ${asset.name}</div>
+                    <div class="glass">Asset Type: ${asset.type}</div>
                     <div class="glass">Asset Moderated: ${asset.isModerated}</div>
                 </div>
                 <div id="assetRight" class="asset-right">
-                    ${imagePanel}
-                    ${aaPanel}
+                    ${aaButtons}
                 </div>
             </div>
         `;
@@ -423,47 +322,28 @@ async function runLookup() {
 }
 
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
-    assetId = extractId(assetId);
     const placeInput = document.getElementById("placeId").value.trim();
     const assetRight = document.getElementById("assetRight");
-    const assetBox = document.getElementById("assetInfo");
+
+    assetRight.innerHTML = `<div style="padding:12px;">Loading...</div>`;
 
     try {
-        if (assetRight) {
-            assetRight.dataset.original = assetRight.innerHTML;
-            assetRight.innerHTML = `<div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">Loading download... (It's searching)</div>`;
-        }
-
         const res = await fetch(backend + "/delivery", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 assetId,
                 placeId: placeInput || null,
-                creatorId: creatorId || null,
-                creatorType: creatorType || null,
-                assetName: currentAssetName || "",
-                assetType: assetType || ""
+                creatorId,
+                creatorType,
+                assetName: currentAssetName,
+                assetType
             })
         });
 
         const text = await res.text();
-
         if (!res.ok) {
-            if (assetRight) {
-                let errMsg = "Failed to download asset.";
-                try {
-                    const parsed = JSON.parse(text);
-                    if (parsed.error) errMsg = parsed.error;
-                } catch {}
-                assetRight.innerHTML = `<div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">${errMsg}</div>`;
-                setTimeout(() => {
-                    if (assetRight.dataset.original) {
-                        assetRight.innerHTML = assetRight.dataset.original;
-                        delete assetRight.dataset.original;
-                    }
-                }, 3000);
-            }
+            assetRight.innerHTML = `<div style="color:#600;">${JSON.parse(text).error}</div>`;
             return;
         }
 
@@ -471,52 +351,33 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         const fileRes = await fetch(data.location);
         const fileBuffer = await fileRes.arrayBuffer();
 
-        let extension = "";
-        if (assetType === "Animation") extension = ".rbxm";
-        if (assetType === "Audio") extension = ".ogg";
+        const ext = assetType === "Animation" ? ".rbxm" : ".ogg";
+        const safeName = sanitizeFilename(currentAssetName);
 
-        const safeName = sanitizeFilename(currentAssetName || assetId.toString());
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
-        const downloadUrl = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
         const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = safeName + extension;
+        a.href = url;
+        a.download = safeName + ext;
         a.click();
 
-        URL.revokeObjectURL(downloadUrl);
-
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
+        URL.revokeObjectURL(url);
+        assetRight.innerHTML = assetRight.dataset.original || assetRight.innerHTML;
 
     } catch (err) {
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
-        assetBox.innerHTML = `<pre>${err}</pre>`;
+        assetRight.innerHTML = `<pre>${err}</pre>`;
     }
 }
 
 async function getSimilarAssetFallback(assetType) {
     const assetRight = document.getElementById("assetRight");
-    const similarList = document.getElementById("similarList");
+    const listBox = document.getElementById("similarList");
 
-    if (!currentAssetName || !assetType) return;
+    listBox.style.display = "block";
+    listBox.innerHTML = "Searching...";
 
     try {
-        if (assetRight) {
-            assetRight.dataset.original = assetRight.dataset.original || assetRight.innerHTML;
-            assetRight.innerHTML = `
-                <div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:#664d03;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">
-                    As a last resort we detected similar assets in our database. These may not be the exact asset you want...
-                </div>
-                <div id="similarList" class="similar-list"></div>
-            `;
-        }
-
         const res = await fetch(backend + "/get-similar-assets", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -527,143 +388,105 @@ async function getSimilarAssetFallback(assetType) {
         });
 
         const text = await res.text();
-
         if (!res.ok) {
-            if (assetRight && assetRight.dataset.original) {
-                assetRight.innerHTML = assetRight.dataset.original;
-                delete assetRight.dataset.original;
-            }
+            listBox.innerHTML = "No similar assets found.";
             return;
         }
 
         const data = JSON.parse(text);
-        const assets = data.assets || [];
-        const targetList = document.getElementById("similarList");
+        const assets = data.assets;
 
         if (!assets.length) {
-            if (targetList) {
-                targetList.style.display = "block";
-                targetList.innerHTML = `<div>No similar assets available.</div>`;
-            }
+            listBox.innerHTML = "No similar assets found.";
             return;
         }
 
-        if (targetList) {
-            targetList.style.display = "block";
-            targetList.innerHTML = `<div>We found ${assets.length} similar asset(s). We will try them in order, or you can click one manually:</div>`;
-            assets.forEach((a, index) => {
-                const btn = document.createElement("button");
-                btn.className = "similar-item-button";
-                btn.textContent = `#${index + 1} - Asset ID: ${a.assetId}, Place ID: ${a.placeId}`;
-                btn.onclick = () => downloadSpecificSimilar(a.assetId, a.placeId, assetType);
-                targetList.appendChild(btn);
-            });
-        }
+        listBox.innerHTML = `<div>Found ${assets.length} similar assets:</div>`;
 
         for (const a of assets) {
-            const ok = await downloadSpecificSimilar(a.assetId, a.placeId, assetType, true);
-            if (ok) return;
+            const btn = document.createElement("button");
+            btn.className = "similar-item-button";
+            btn.textContent = `Asset ${a.assetId} (Place ${a.placeId})`;
+            btn.onclick = () => downloadSpecificSimilar(a.assetId, a.placeId, assetType);
+            listBox.appendChild(btn);
         }
 
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
     } catch {
-        if (assetRight && assetRight.dataset.original) {
-            assetRight.innerHTML = assetRight.dataset.original;
-            delete assetRight.dataset.original;
-        }
+        listBox.innerHTML = "Error loading similar assets.";
     }
 }
 
-async function downloadSpecificSimilar(assetId, placeId, assetType, silent = false) {
+async function downloadSpecificSimilar(assetId, placeId, assetType) {
     try {
         const res = await fetch(`https://assetdelivery.roblox.com/v1/assetId/${assetId}`, {
             headers: {
                 "User-Agent": "Roblox/WinInet",
                 Accept: "application/json",
-                "Roblox-Place-Id": placeId.toString()
+                "Roblox-Place-Id": placeId
             }
         });
 
         const text = await res.text();
-        if (!res.ok) return false;
+        if (!res.ok) return;
 
         const data = JSON.parse(text);
-        if (!data.location) return false;
+        if (!data.location) return;
 
         const fileRes = await fetch(data.location);
         const fileBuffer = await fileRes.arrayBuffer();
 
-        let extension = "";
-        if (assetType === "Animation") extension = ".rbxm";
-        if (assetType === "Audio") extension = ".ogg";
+        const ext = assetType === "Animation" ? ".rbxm" : ".ogg";
+        const safeName = sanitizeFilename(currentAssetName);
 
-        const safeName = sanitizeFilename(currentAssetName || assetId.toString());
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
-        const downloadUrl = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
         const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = safeName + extension;
+        a.href = url;
+        a.download = safeName + ext;
         a.click();
 
-        URL.revokeObjectURL(downloadUrl);
+        URL.revokeObjectURL(url);
 
-        return true;
-    } catch {
-        return false;
-    }
+    } catch {}
 }
 
-async function fetchUser(userId) {
+async function fetchUser(id) {
     const creatorBox = document.getElementById("creatorInfo");
-
     try {
-        const res = await fetch(`${backend}/user/${userId}`);
+        const res = await fetch(`${backend}/user/${id}`);
         const text = await res.text();
-
         if (!res.ok) {
             creatorBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
-
         const user = JSON.parse(text);
-
         creatorBox.innerHTML = `
             <div class="glass">Creator Type: User</div>
             <div class="glass">Username: ${user.name}</div>
             <div class="glass">Display Name: ${user.displayName}</div>
-            <div class="glass">Verified Status: ${user.hasVerifiedBadge}</div>
-            <div class="glass">Banned Status: ${user.isBanned}</div>
+            <div class="glass">Verified: ${user.hasVerifiedBadge}</div>
         `;
     } catch (err) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
 
-async function fetchGroup(groupId) {
+async function fetchGroup(id) {
     const creatorBox = document.getElementById("creatorInfo");
-
     try {
-        const res = await fetch(`${backend}/group/${groupId}`);
+        const res = await fetch(`${backend}/group/${id}`);
         const text = await res.text();
-
         if (!res.ok) {
             creatorBox.innerHTML = `<pre>${text}</pre>`;
             return;
         }
-
         const group = JSON.parse(text);
-
         creatorBox.innerHTML = `
             <div class="glass">Creator Type: Group</div>
             <div class="glass">Name: ${group.name}</div>
-            <div class="glass">Verified Status: ${group.hasVerifiedBadge}</div>
-            <div class="glass">Owner's Username: ${group.owner.username}</div>
-            <div class="glass">Owner's Display Name: ${group.owner.displayName}</div>
-            <div class="glass">Owner's Verified Status: ${group.owner.hasVerifiedBadge}</div>
+            <div class="glass">Verified: ${group.hasVerifiedBadge}</div>
+            <div class="glass">Owner: ${group.owner.username}</div>
         `;
     } catch (err) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
