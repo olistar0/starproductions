@@ -593,9 +593,28 @@ function restoreAssetRight() {
 
 async function downloadAsset(assetId, assetType, creatorType, creatorId) {
     assetId = extractId(assetId);
-    const placeInput = document.getElementById("placeId").value.trim();
-    if (document.getElementById("devDisableDownloads").checked) {
+const placeInput = document.getElementById("placeId").value.trim();
+const disableDownloads = document.getElementById("devDisableDownloads").checked;
+const showPlaceId = document.getElementById("devShowPlaceId").checked;
+
+if (showPlaceId) {
+    let box = document.getElementById("devPlaceIdBox");
+    if (box) box.textContent = "Place ID Used: Waiting for download...";
+}
+
+if (disableDownloads && !showPlaceId) {
     showAssetRightError("Download blocked by Dev Mode.");
+    return;
+}
+
+lastUsedPlaceId = placeInput || "(auto)";
+
+if (disableDownloads && !showPlaceId) {
+    showAssetRightError("Download blocked by Dev Mode.");
+    return;
+}
+
+lastUsedPlaceId = placeInput || "(auto)";
     return;
 }
 lastUsedPlaceId = placeInput || "(auto)";
@@ -657,10 +676,12 @@ lastUsedPlaceId = placeInput || "(auto)";
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
         const downloadUrl = URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = safeName + extension;
-        a.click();
+if (!disableDownloads) {
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = safeName + extension;
+    a.click();
+}
 
         URL.revokeObjectURL(downloadUrl);
 
@@ -685,6 +706,11 @@ lastUsedPlaceId = placeInput || "(auto)";
         showAssetRightError("An error occurred while downloading the asset.");
         assetBox.innerHTML = `<pre>${err}</pre>`;
     }
+
+    if (document.getElementById("devShowPlaceId").checked) {
+    const box = document.getElementById("devPlaceIdBox");
+    if (box) box.textContent = "Place ID Used: " + lastUsedPlaceId;
+}
 }
 
 async function trySimilarAsset(assetRight, assetType) {
@@ -922,11 +948,33 @@ async function fetchGroup(groupId) {
         creatorBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
+    document.getElementById("devShowPlaceId").addEventListener("change", () => {
+    const box = document.getElementById("devPlaceIdBox");
+    const checked = document.getElementById("devShowPlaceId").checked;
+
+    if (checked) {
+        if (!box) {
+            const assetBox = document.getElementById("assetInfo");
+            const infoBlocks = assetBox.querySelector(".asset-left");
+            if (infoBlocks) {
+                const div = document.createElement("div");
+                div.className = "glass";
+                div.id = "devPlaceIdBox";
+                div.textContent = "Place ID Used: Waiting for download...";
+                infoBlocks.appendChild(div);
+            }
+        } else {
+            box.textContent = "Place ID Used: Waiting for download...";
+        }
+    } else {
+        if (box) box.remove();
+    }
+});
 </script>
 <div id="devModePanel" class="glass">
     <div style="font-weight:bold;margin-bottom:6px;">Dev Mode</div>
     <label><input type="checkbox" id="devDisableDownloads"> Disable Downloads</label>
-    <label><input type="checkbox" id="devShowPlaceId"> Show Place ID Used</label>
+    <label><input type="checkbox" id="devShowPlaceId" checked> Show Place ID Used</label>
 </div>
 </body>
 </html>
