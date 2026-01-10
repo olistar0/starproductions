@@ -435,17 +435,17 @@ async function runLookup() {
             return;
         }
 
-        const data = JSON.parse(text);
+const data = JSON.parse(text);
 
-        if (!data.data || !data.data[0]) {
-            assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
-            return;
-        }
+if (!data || !data.AssetId) {
+    assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
+    return;
+}
 
-        const asset = data;
-        const creator = asset.Creator || {};
-        const creatorType = creator.CreatorType || null;
-        const creatorId = creator.CreatorTargetId || null;
+const asset = data;
+const creator = asset.Creator || {};
+const creatorType = creator.CreatorType || null;
+const creatorId = creator.CreatorTargetId || null;
 
         const assetTypeMap = {
   1: "Image",
