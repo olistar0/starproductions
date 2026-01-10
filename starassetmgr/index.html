@@ -437,84 +437,16 @@ if (!data || !data.AssetId) {
 }
 
 const asset = data;
-const creator = asset.Creator || {};
-const creatorType = creator.CreatorType || null;
-const creatorId = creator.CreatorTargetId || null;
 
-        const assetTypeMap = {
-  1: "Image",
-  2: "TShirt",
-  3: "Audio",
-  4: "Mesh",
-  5: "Lua",
-  8: "Hat",
-  9: "Place",
-  10: "Model",
-  11: "Shirt",
-  12: "Pants",
-  13: "Decal",
-  17: "Head",
-  18: "Face",
-  19: "Gear",
-  21: "Badge",
-  24: "Animation",
-  27: "Torso",
-  28: "RightArm",
-  29: "LeftArm",
-  30: "LeftLeg",
-  31: "RightLeg",
-  32: "Package",
-  34: "GamePass",
-  38: "Plugin",
-  40: "MeshPart",
-  41: "HairAccessory",
-  42: "FaceAccessory",
-  43: "NeckAccessory",
-  44: "ShoulderAccessory",
-  45: "FrontAccessory",
-  46: "BackAccessory",
-  47: "WaistAccessory",
-  48: "ClimbAnimation",
-  49: "DeathAnimation",
-  50: "FallAnimation",
-  51: "IdleAnimation",
-  52: "JumpAnimation",
-  53: "RunAnimation",
-  54: "SwimAnimation",
-  55: "WalkAnimation",
-  56: "PoseAnimation",
-  57: "EarAccessory",
-  58: "EyeAccessory",
-  61: "EmoteAnimation",
-  62: "Video",
-  64: "TShirtAccessory",
-  65: "ShirtAccessory",
-  66: "PantsAccessory",
-  67: "JacketAccessory",
-  68: "SweaterAccessory",
-  69: "ShortsAccessory",
-  70: "LeftShoeAccessory",
-  71: "RightShoeAccessory",
-  72: "DressSkirtAccessory",
-  73: "FontFamily",
-  76: "EyebrowAccessory",
-  77: "EyelashAccessory",
-  78: "MoodAnimation",
-  79: "DynamicHead",
-  88: "FaceMakeup",
-  89: "LipMakeup",
-  90: "EyeMakeup"
-}
-
-const typeName = assetTypeMap[asset.AssetTypeId] || "Unknown";
-        const assetName = asset.Name || "Asset";
+        const typeName = asset.assetType || "AssetType";
+        const assetName = asset.displayName || "Asset";
         currentAssetName = assetName;
         currentAssetType = typeName;
 
         let aaPanel;
         if (typeName === "Animation" || typeName === "Audio" || typeName === "Image" || typeName === "Decal") {
             aaPanel = `
-                <div id="aaPanel" style="margin-top:15px;">
+                <div id="aaPanel" style="margin-top">
                     <button style="background:rgba(180,255,180,0.8);color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
                     <div class="similar-divider"></div>
                     <button style="background:linear-gradient(90deg,#3bbf7c,#f04b4b);color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:4px;" onclick="getSimilarAssetFallback('${typeName}')">Get Similar Asset</button>
