@@ -385,7 +385,6 @@ async function lookup() {
     if (executeCooldown) return;
 
     const assetBox = document.getElementById("assetInfo");
-    const creatorBox = document.getElementById("creatorInfo");
 
     executeCooldown = true;
     autoAttemptFailed = false;
@@ -393,7 +392,6 @@ async function lookup() {
 
     const interval = setInterval(() => {
         assetBox.innerHTML = `Loading... (${remaining})`;
-        creatorBox.innerHTML = "";
         remaining--;
         if (remaining < 0) {
             clearInterval(interval);
