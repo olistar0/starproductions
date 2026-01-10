@@ -431,7 +431,7 @@ async function runLookup() {
 
 const data = JSON.parse(text);
 
-if (!data || !data.AssetId) {
+if (!data || !data.assetId) {
     assetBox.innerHTML = `<div class="glass">Not a valid asset ID. Did you copy it right?</div>`;
     return;
 }
