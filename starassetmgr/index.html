@@ -344,9 +344,6 @@
     <h3>Asset Info & Downloads</h3>
     <div id="assetInfo" class="glass"></div>
 
-    <h3>Creator Info</h3>
-    <div id="creatorInfo" class="glass"></div>
-
     <div class="footer">
         © 2025 Star Productions - Star Asset Manager | Developed By OliStar (Discord: oli_l_w)
     </div>
@@ -517,44 +514,22 @@ const typeName = assetTypeMap[asset.AssetTypeId] || "Unknown";
         currentAssetName = assetName;
         currentAssetType = typeName;
 
-        let imagePanel = `
-            <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-            <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;">Not Available</button>
-        `;
-
-        if (typeName === "Image" || typeName === "Decal") {
-            const thumbUrl = await fetchThumbnail(ids);
-            if (thumbUrl) {
-                imagePanel = `
-                    <div style="margin-bottom:10px;">Image assets can be downloaded.</div>
-                    <button style="background:rgba(180,255,180,0.8);color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;" onclick="window.open('${thumbUrl}', '_blank')">Download</button>
-                `;
-            }
-        }
-
         let aaPanel;
-        if (typeName === "Animation" || typeName === "Audio") {
+        if (typeName === "Animation" || typeName === "Audio" || typeName === "Image" || typeName === "Decal") {
             aaPanel = `
                 <div id="aaPanel" style="margin-top:15px;">
-                    <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
+                    <div style="margin-bottom:5px;">Download</div>
                     <button style="background:rgba(180,255,180,0.8);color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;" onclick="downloadAsset('${ids}', '${typeName}', '${creatorType}', '${creatorId}')">Download</button>
                     <div class="similar-divider"></div>
                     <button style="background:linear-gradient(90deg,#3bbf7c,#f04b4b);color:#000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:4px;" onclick="getSimilarAssetFallback('${typeName}')">Get Similar Asset</button>
-                    <div class="similar-warning">Only use this as a last resort if it can't find your asset. It's possible to give you the wrong asset.</div>
+                    <div class="similar-warning">Only use this as a last resort if it can't find your asset. It's possible to give you the wrong asset. (Only supported for Audio/Animations)</div>
                     <div id="similarList" class="similar-list"></div>
-                </div>
-            `;
-        } else if (typeName === "Image" || typeName === "Decal") {
-            aaPanel = `
-                <div id="aaPanel" style="margin-top:15px;">
-                    <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
-                    <button disabled style="background:#ffdddd;color:#660000;padding:8px 12px;border-radius:12px;font-weight:bold;width:100%;margin-top:8px;">Not Available for this asset type.</button>
                 </div>
             `;
         } else {
             aaPanel = `
                 <div id="aaPanel" style="margin-top:15px;">
-                    <div style="margin-bottom:5px;">Animation/Audios can be downloaded.</div>
+                    <div style="margin-bottom:5px;">Download</div>
                     <div style="background:#ffdddd;color:#660000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;">
                         This asset type is not supported for downloading.
                     </div>
@@ -567,16 +542,13 @@ const typeName = assetTypeMap[asset.AssetTypeId] || "Unknown";
                 <div class="asset-left">
                     <div class="glass">Asset Name: ${assetName}</div>
                     <div class="glass">Asset Type: ${typeName}</div>
+                    <div class="glass"> </div>
                 </div>
                 <div id="assetRight" class="asset-right">
-                    ${imagePanel}
                     ${aaPanel}
                 </div>
             </div>
         `;
-
-        if (creatorType === "User") fetchUser(creatorId);
-        if (creatorType === "Group") fetchGroup(creatorId);
 
     } catch (err) {
         assetBox.innerHTML = `<pre>${err}</pre>`;
@@ -686,6 +658,8 @@ async function downloadAsset(assetId, assetType, creatorType, creatorId) {
         let extension = "";
         if (assetType === "Animation") extension = ".rbxm";
         if (assetType === "Audio") extension = ".ogg";
+        if (assetType === "Decal") extension = ".png";
+        if (assetType === "Image") extension = ".png";
 
         const safeName = sanitizeFilename(currentAssetName || assetId.toString());
         const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
@@ -889,59 +863,6 @@ async function downloadSpecificSimilar(assetId, placeId, assetType, silent) {
             showAssetRightError("An error occurred while downloading the similar asset.");
         }
         return false;
-    }
-}
-
-async function fetchUser(userId) {
-    const creatorBox = document.getElementById("creatorInfo");
-
-    try {
-        const res = await fetch(`${backend}/user/${userId}`);
-        const text = await res.text();
-
-        if (!res.ok) {
-            creatorBox.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
-
-        const user = JSON.parse(text);
-
-        creatorBox.innerHTML = `
-            <div class="glass">Creator Type: User</div>
-            <div class="glass">Username: ${user.name}</div>
-            <div class="glass">Display Name: ${user.displayName}</div>
-            <div class="glass">Verified Status: ${user.hasVerifiedBadge}</div>
-            <div class="glass">Banned Status: ${user.isBanned}</div>
-        `;
-    } catch (err) {
-        creatorBox.innerHTML = `<pre>${err}</pre>`;
-    }
-}
-
-async function fetchGroup(groupId) {
-    const creatorBox = document.getElementById("creatorInfo");
-
-    try {
-        const res = await fetch(`${backend}/group/${groupId}`);
-        const text = await res.text();
-
-        if (!res.ok) {
-            creatorBox.innerHTML = `<pre>${text}</pre>`;
-            return;
-        }
-
-        const group = JSON.parse(text);
-
-        creatorBox.innerHTML = `
-            <div class="glass">Creator Type: Group</div>
-            <div class="glass">Name: ${group.name}</div>
-            <div class="glass">Verified Status: ${group.hasVerifiedBadge}</div>
-            <div class="glass">Owner's Username: ${group.owner.username}</div>
-            <div class="glass">Owner's Display Name: ${group.owner.displayName}</div>
-            <div class="glass">Owner's Verified Status: ${group.owner.hasVerifiedBadge}</div>
-        `;
-    } catch (err) {
-        creatorBox.innerHTML = `<pre>${err}</pre>`;
     }
 }
 </script>
