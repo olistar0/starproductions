@@ -24,6 +24,9 @@ const presets = {
   7: {
     colors: ["#00ff12", "#9effa5"],
   },
+  8: {
+    colors: ["#FFAC12", "#F7F868"],
+  },
 }
 const formats = {
   0: {
