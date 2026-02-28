@@ -1,7 +1,7 @@
 // elements for obtaining vals
 const nickName = document.getElementById('nickname');
 const coloredNick = document.getElementById('coloredNick');
-const savedColors = ['FBCD2C', 'F8372B', getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor()];
+const savedColors = ['FF8700', 'EDFF00', getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor(), getRandomHexColor()];
 const presets = {
   1: {
     colors: ["FF0000", "FF7F00", "FFFF00", "00FF00", "0000FF", "4B0082", "9400D3"],
@@ -26,6 +26,9 @@ const presets = {
   },
   8: {
     colors: ["#FFAC12", "#F7F868"],
+  },
+  9: {
+    colors: ["#FFFFFF", "#B8EBFF", "#A9B8FF"],
   },
 }
 const formats = {
